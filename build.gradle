@@ -2,8 +2,9 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.2.60'
+        kotlin_version = "1.2.60"
         support_version = "28.0.0-rc01"
+        lifecycle_version = "1.1.1"
     }
     repositories {
         google()
