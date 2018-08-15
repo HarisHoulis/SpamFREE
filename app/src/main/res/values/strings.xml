@@ -14,6 +14,7 @@
 
     <string name="new_status">New Status</string>
     <string name="user_default_status">Hi there, I am using SpamFree</string>
+    <string name="default_user_image_name">default</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

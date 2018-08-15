@@ -7,7 +7,7 @@
 
         <variable
             name="isLoading"
-            type="boolean"/>
+            type="boolean" />
 
         <variable
             name="user"
@@ -19,21 +19,26 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/settings_activity_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryDark">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/user_avatar_imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:src="@drawable/ic_default_avatar"
             app:layout_constraintBottom_toTopOf="@+id/guideline1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:userImage="@{user.image}" />
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline1"
@@ -81,11 +86,12 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@color/defaultTextColor"
+            android:onClick="@{() -> handler.onImageChangeClick()}"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
             android:text="Change Image"
             android:textAlignment="center"
-            android:textColor="@color/textColorSecondary"
+            android:textColor="@color/colorAccent"
             app:layout_constraintBottom_toTopOf="@+id/user_change_status_button"
             app:layout_constraintEnd_toEndOf="@+id/user_change_status_button"
             app:layout_constraintStart_toStartOf="@+id/user_change_status_button" />
@@ -97,12 +103,13 @@
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
             android:backgroundTint="@color/colorAccent"
+            android:enabled="@{!isLoading}"
             android:onClick="@{() -> handler.onStatusChangeClick(user)}"
             android:paddingEnd="16dp"
             android:paddingStart="16dp"
-            android:enabled="@{!isLoading}"
             android:text="Change Status"
             android:textAlignment="center"
+            android:textColor="@color/defaultTextColor"
             app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"

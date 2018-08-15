@@ -1,35 +1,37 @@
 package xoulis.xaris.com.spamfree.view
 
-import android.app.Dialog
+import android.app.Activity
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.SwipeDismissBehavior
-import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.*
 import android.widget.*
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_settings.*
+import com.google.firebase.storage.FirebaseStorage
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
-import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.ActivitySettingsBinding
-import xoulis.xaris.com.spamfree.dbRef
-import xoulis.xaris.com.spamfree.enableView
 import xoulis.xaris.com.spamfree.viewmodel.SettingsViewModel
 
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
+
+    private val chatPhotoStorageRef =
+        FirebaseStorage.getInstance().reference.child("profile_photos")
+
+    companion object {
+        private const val RC_PHOTO_PICKER = 2
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,52 @@ class SettingsActivity : AppCompatActivity() {
                 binding.isLoading = false
             }
         })
+    }
+
+    fun onImageChangeClick() {
+        if (!this.isNetworkAvailable()) {
+            binding.settingsActivityRoot.showSnackBar(R.string.no_internet_connection)
+        } else {
+            CropImage.activity()
+                .setAspectRatio(1, 1)
+                .setMaxCropResultSize(5000, 5000)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .start(this)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            val result = CropImage.getActivityResult(data)
+            uploadUserPhoto(result.uri)
+        }
+    }
+
+    private fun uploadUserPhoto(selectedImageUri: Uri) {
+        if (!this.isNetworkAvailable()) {
+            binding.settingsActivityRoot.showSnackBar(R.string.no_internet_connection)
+        } else {
+            selectedImageUri.lastPathSegment?.let {
+                val photoRef = chatPhotoStorageRef.child(it)
+                photoRef.putFile(selectedImageUri)
+                    .addOnSuccessListener { _ ->
+                        photoRef.downloadUrl
+                            .addOnCompleteListener { task ->
+                                check(task.isSuccessful) { "Failed to retrieve url for user photo" }
+                                updateUserPhotoPath(task.result.toString())
+                            }
+                    }
+            }
+        }
+    }
+
+    private fun updateUserPhotoPath(imageUrl: String) {
+        binding.user?.let {
+            val tempUser = it.apply {
+                image = imageUrl
+            }
+            dbRef().setValue(tempUser)
+        }
     }
 
     fun onStatusChangeClick(user: User) {

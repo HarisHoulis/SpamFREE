@@ -80,7 +80,11 @@ class SplashActivity : AppCompatActivity() {
     private fun addUserToDb() {
         val (uid, name) = FirebaseAuth.getInstance().currentUser.getUserInfo()
         val ref = FirebaseDatabase.getInstance().reference.child("Users").child(uid)
-        val user = User(name, getString(R.string.user_default_status), "Default")
+        val user = User(
+            name,
+            getString(R.string.user_default_status),
+            getString(R.string.default_user_image_name)
+        )
         ref.setValue(user)
     }
 
