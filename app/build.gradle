@@ -46,10 +46,16 @@ dependencies {
 
 //    Firebase
     implementation 'com.google.firebase:firebase-database:16.0.1'
-    implementation 'com.google.firebase:firebase-auth:16.0.2'
+    implementation 'com.google.firebase:firebase-auth:16.0.3'
     implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
+    implementation 'com.google.firebase:firebase-storage:16.0.1'
 
+//    Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+//    ImageView and ImageCropper
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
 
 //    Architecture Components
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
@@ -57,5 +63,3 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
-
-
