@@ -1,4 +1,4 @@
-package xoulis.xaris.com.spamfree.view
+package xoulis.xaris.com.spamfree.view.chats
 
 
 import android.os.Bundle

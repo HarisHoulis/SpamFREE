@@ -8,4 +8,7 @@
     <color name="defaultTextColor">#FFFFFF</color>
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#757575</color>
+
+    <!-- Shimmer -->
+    <color name="background">#dddddd</color>
 </resources>

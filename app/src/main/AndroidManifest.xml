@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:name=".MyApp"
@@ -30,7 +31,7 @@
         <activity
             android:name=".view.MainActivity"
             android:label="@string/title_activity_main" />
-        <activity android:name=".view.SettingsActivity" />
+        <activity android:name=".view.settings.SettingsActivity" />
 
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

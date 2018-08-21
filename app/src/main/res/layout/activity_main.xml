@@ -20,7 +20,6 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="1"
             android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways"
             app:title="@string/app_name"
             app:titleTextColor="@color/defaultTextColor">
 
@@ -43,6 +42,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_chats" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/chats_codes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tab_codes" />
 
         </android.support.design.widget.TabLayout>
     </android.support.design.widget.AppBarLayout>

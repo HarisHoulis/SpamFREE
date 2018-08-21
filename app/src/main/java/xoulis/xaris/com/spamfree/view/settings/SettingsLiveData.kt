@@ -1,4 +1,4 @@
-package xoulis.xaris.com.spamfree.viewmodel
+package xoulis.xaris.com.spamfree.view.settings
 
 import android.arch.lifecycle.LiveData
 import android.util.Log

@@ -15,7 +15,7 @@
 
         <variable
             name="handler"
-            type="xoulis.xaris.com.spamfree.view.SettingsActivity" />
+            type="xoulis.xaris.com.spamfree.view.settings.SettingsActivity" />
     </data>
 
     <android.support.constraint.ConstraintLayout

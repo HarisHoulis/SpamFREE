@@ -1,4 +1,4 @@
-package xoulis.xaris.com.spamfree.view
+package xoulis.xaris.com.spamfree.view.settings
 
 import android.app.Activity
 import android.arch.lifecycle.Observer
@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.ActivitySettingsBinding
-import xoulis.xaris.com.spamfree.viewmodel.SettingsViewModel
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -90,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
             val tempUser = it.apply {
                 image = imageUrl
             }
-            dbRef().setValue(tempUser)
+            userDbRef.setValue(tempUser)
         }
     }
 
@@ -126,7 +125,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun updateUserStatus(newStatus: String, user: User) {
         if (newStatus != user.status) {
-            dbRef().setValue(user)
+            userDbRef.setValue(user)
         }
     }
 }
