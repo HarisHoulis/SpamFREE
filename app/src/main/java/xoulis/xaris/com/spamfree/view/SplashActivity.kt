@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.User
+import xoulis.xaris.com.spamfree.userDbRef
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -78,23 +79,19 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun addUserToDb() {
-        val (uid, name) = FirebaseAuth.getInstance().currentUser.getUserInfo()
-        val ref = FirebaseDatabase.getInstance().reference.child("Users").child(uid)
+        val name = FirebaseAuth.getInstance().currentUser?.displayName ?: "You"
         val user = User(
             name,
             getString(R.string.user_default_status),
             getString(R.string.default_user_image_name)
         )
-        ref.setValue(user)
+        userDbRef.setValue(user)
     }
-
-    private fun FirebaseUser?.getUserInfo(): Pair<String, String> =
-        Pair(this!!.uid, displayName ?: "You")
-
 
     private fun showMainActivity() {
         intent = Intent(this@SplashActivity, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     private fun String.showSnackBar() {

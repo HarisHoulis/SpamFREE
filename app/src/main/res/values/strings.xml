@@ -1,17 +1,21 @@
 <resources>
     <string name="app_name">SpamFree</string>
 
+    <!-- Error/Info messages -->
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">An unknown error occurred</string>
+    <string name="code_copied">Code copied</string>
 
     <string name="title_activity_main">MainActivity</string>
     <string name="tab_requests">Requests</string>
     <string name="tab_chats">Chats</string>
+    <string name="tab_codes">Codes</string>
 
     <string name="action_settings">Account Settings</string>
     <string name="action_logout">Log Out</string>
 
+    <!-- Settings Activity-->
     <string name="new_status">New Status</string>
     <string name="user_default_status">Hi there, I am using SpamFree</string>
     <string name="default_user_image_name">default</string>

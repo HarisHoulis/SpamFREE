@@ -2,22 +2,21 @@ package xoulis.xaris.com.spamfree.view
 
 import android.content.Intent
 import android.support.design.widget.TabLayout
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.view.ViewPager
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
 
 import xoulis.xaris.com.spamfree.R
 import kotlinx.android.synthetic.main.activity_main.*
+import xoulis.xaris.com.spamfree.view.chats.ChatsFragment
+import xoulis.xaris.com.spamfree.view.codes.CodesFragment
+import xoulis.xaris.com.spamfree.view.requests.RequestsFragment
+import xoulis.xaris.com.spamfree.view.settings.SettingsActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         viewPager.adapter = mSectionsPagerAdapter
+        viewPager.offscreenPageLimit = 3
 
         // Implement swipe views
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
@@ -60,13 +60,14 @@ class MainActivity : AppCompatActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> RequestsFragment.newInstance("test", "test")
-                else -> ChatsFragment.newInstance("test", "test")
+                0 -> RequestsFragment.newInstance("fragment1", "requests")
+                1 -> ChatsFragment.newInstance("fragment2", "chats")
+                else -> CodesFragment.newInstance()
             }
         }
 
         override fun getCount(): Int {
-            return 2
+            return 3
         }
     }
 }

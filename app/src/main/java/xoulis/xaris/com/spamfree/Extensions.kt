@@ -2,16 +2,13 @@ package xoulis.xaris.com.spamfree
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.support.design.widget.Snackbar
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-
-/* Firebase */
-private const val USERS_CHILD = "Users"
-private val UID = FirebaseAuth.getInstance().uid
-
-val dbRef = { FirebaseDatabase.getInstance().reference.child(USERS_CHILD).child(UID!!) }
 
 /* Views */
 fun View.enableView(enable: Boolean) {
