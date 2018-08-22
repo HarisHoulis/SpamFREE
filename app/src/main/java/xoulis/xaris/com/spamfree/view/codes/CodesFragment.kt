@@ -4,6 +4,7 @@ package xoulis.xaris.com.spamfree.view.codes
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.graphics.Color
 import android.opengl.Visibility
@@ -11,14 +12,20 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -27,15 +34,14 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import kotlinx.android.synthetic.main.fragment_codes.*
 import kotlinx.android.synthetic.main.list_item_code.*
+import xoulis.xaris.com.spamfree.*
 
-import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemCodeBinding
-import xoulis.xaris.com.spamfree.showSnackBar
-import xoulis.xaris.com.spamfree.userCodesDbRef
 
 class CodesFragment : Fragment() {
 
@@ -53,27 +59,54 @@ class CodesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupUsedCodesRecyclerView()
-        setCodeLongClickListener()
         fetchUnusedCode()
+
+        setCodeLongClickListener()
+        setUnusedCodeMessagesClickListener()
     }
 
     private fun setCodeLongClickListener() {
         binding.unusedCodeTextVew.setOnLongClickListener {
-            val clipboard =
-                activity!!.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            binding.unusedCodeTextVew.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
             val codeId = binding.code?.id
-            codeId?.let { id ->
-                val clip = ClipData.newPlainText("Code copied.", id.toString())
-                clipboard.primaryClip = clip
-                binding.unusedCodeTextVew.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                it.showSnackBar(R.string.code_copied)
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_code_subject))
+                putExtra(Intent.EXTRA_TEXT, codeId)
+                type = "text/plain"
             }
+            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_code_title)))
             false
         }
     }
 
-    private fun fetchUnusedCode() {
+    private fun setUnusedCodeMessagesClickListener() {
+        val listener = View.OnClickListener {
+            val code = binding.code!!
+            val title = "Number of messages"
+            val text = code.messages
+            context?.showDialog(title, text, InputType.TYPE_CLASS_NUMBER) { input ->
+                updateCodeMessages(code.id, input)
+            }
+        }
+        binding.unusedCodeMessagesGroup.setAllOnClickListeners(listener)
+    }
 
+    private fun updateCodeMessages(codeId: String, messages: String) {
+        val query = userCodesDbRef.orderByChild("id").equalTo(codeId)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (child in snapshot.children) {
+                    val childKey = child.key!!
+                    snapshot.ref.child(childKey).child("messages").setValue(messages)
+                }
+            }
+        })
+    }
+
+    private fun fetchUnusedCode() {
         val query = userCodesDbRef.orderByChild("used").equalTo(false).limitToFirst(1)
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -108,7 +141,10 @@ class CodesFragment : Fragment() {
                 .build()
 
         val adapter = object : FirebaseRecyclerAdapter<ClientCode, CodesViewHolder>(options) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CodesViewHolder {
+            override fun onCreateViewHolder(
+                parent: ViewGroup,
+                viewType: Int
+            ): CodesViewHolder {
                 val inflater = LayoutInflater.from(parent.context)
                 val itemBinding = ListItemCodeBinding.inflate(inflater, parent, false)
                 return CodesViewHolder(itemBinding)
