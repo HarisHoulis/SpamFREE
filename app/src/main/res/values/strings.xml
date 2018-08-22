@@ -5,7 +5,8 @@
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
     <string name="unknown_error">An unknown error occurred</string>
-    <string name="code_copied">Code copied</string>
+    <string name="share_code_subject">Add me on SpamFree, using this code: </string>
+    <string name="share_code_title">Share using</string>
 
     <string name="title_activity_main">MainActivity</string>
     <string name="tab_requests">Requests</string>
