@@ -42,6 +42,7 @@ import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemCodeBinding
+import xoulis.xaris.com.spamfree.util.CustomDialogHelper
 
 class CodesFragment : Fragment() {
 
@@ -85,9 +86,13 @@ class CodesFragment : Fragment() {
             val code = binding.code!!
             val title = "Number of messages"
             val text = code.messages
-            context?.showDialog(title, text, InputType.TYPE_CLASS_NUMBER) { input ->
-                updateCodeMessages(code.id, input)
+            val dialog = context!!.getDialog(title, text) {
+                setEditTextWatcher()
+                setOkButtonClickListener { userInput ->
+                    updateCodeMessages(code.id, userInput)
+                }
             }
+            dialog.show()
         }
         binding.unusedCodeMessagesGroup.setAllOnClickListeners(listener)
     }
