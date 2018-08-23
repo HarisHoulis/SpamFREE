@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.*
 import com.google.firebase.storage.FirebaseStorage
 import com.theartofdev.edmodo.cropper.CropImage
@@ -19,18 +20,14 @@ import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.ActivitySettingsBinding
+import xoulis.xaris.com.spamfree.util.CustomDialogHelper
 
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-
     private val chatPhotoStorageRef =
         FirebaseStorage.getInstance().reference.child("profile_photos")
-
-    companion object {
-        private const val RC_PHOTO_PICKER = 2
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,38 +91,20 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     fun onStatusChangeClick(user: User) {
-        val dialogBuilder by lazy { AlertDialog.Builder(this) }
-        dialogBuilder.setView(R.layout.custom_edit_text_dialog)
-        val dialog by lazy { dialogBuilder.show() }
-
-        val messageEditText: EditText =
-            dialog.findViewById(R.id.custom_dialog_message)!!
-        val okButton: Button =
-            dialog.findViewById(R.id.custom_dialog_ok_button)!!
-
-        okButton.enableView(false)
-        messageEditText.setText(user.status)
-        dialog.custom_dialog_title.text = getString(R.string.new_status)
-
-        messageEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                okButton.enableView(p0.toString() != user.status)
+        val title = getString(R.string.new_status)
+        val text = user.status
+        val dialog = this.getDialog(title, text) {
+            setEditTextWatcher()
+            setOkButtonClickListener { newStatus ->
+                updateUserStatus(newStatus, user)
             }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        })
-        okButton.setOnClickListener {
-            val newStatus = messageEditText.text.toString().trim()
-            updateUserStatus(newStatus, user)
-            dialog.dismiss()
         }
+        dialog.show()
     }
 
     private fun updateUserStatus(newStatus: String, user: User) {
         if (newStatus != user.status) {
-            userDbRef.setValue(user)
+            userDbRef.child("status").setValue(newStatus)
         }
     }
 }

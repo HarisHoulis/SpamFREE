@@ -18,6 +18,7 @@ import android.widget.EditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
+import xoulis.xaris.com.spamfree.util.CustomDialogHelper
 
 /* Views */
 fun View.enableView(enable: Boolean) {
@@ -37,42 +38,16 @@ fun Group.setAllOnClickListeners(listener: View.OnClickListener) {
     }
 }
 
-fun Context.showDialog(
+/* CustomDialogHelper */
+inline fun Context.getDialog(
     title: String,
-    message: String,
-    inputType: Int,
-    f: (input: String) -> (Unit)
-) {
-    val dialogBuilder by lazy {
-        AlertDialog.Builder(this)
-    }
-    dialogBuilder.setView(R.layout.custom_edit_text_dialog)
-    val dialog by lazy { dialogBuilder.show() }
+    text: String,
+    f: CustomDialogHelper.() -> Unit
+): AlertDialog =
+    CustomDialogHelper(this, title, text).apply {
+        f()
+    }.create()
 
-    val messageEditText: EditText by lazy { dialog.findViewById<EditText>(R.id.custom_dialog_message)!! }
-    val okButton: Button by lazy { dialog.findViewById<Button>(R.id.custom_dialog_ok_button)!! }
-
-    okButton.enableView(false)
-
-    messageEditText.addTextChangedListener(object : TextWatcher {
-        override fun afterTextChanged(p0: Editable?) {
-            okButton.enableView(p0.toString() != message)
-        }
-
-        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-    })
-    okButton.setOnClickListener {
-        val input = messageEditText.text.toString()
-        f(input)
-        dialog.dismiss()
-    }
-
-    dialog.custom_dialog_title.text = title
-    messageEditText.inputType = inputType
-    messageEditText.setText(message)
-}
 
 /* Network */
 fun Context.isNetworkAvailable(): Boolean {
