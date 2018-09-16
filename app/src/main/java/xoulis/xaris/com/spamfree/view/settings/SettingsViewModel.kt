@@ -6,5 +6,5 @@ import xoulis.xaris.com.spamfree.view.settings.SettingsLiveData
 
 class SettingsViewModel : ViewModel() {
 
-    val userLiveData = SettingsLiveData(userDbRef)
+    val userLiveData = SettingsLiveData(userDbRef())
 }

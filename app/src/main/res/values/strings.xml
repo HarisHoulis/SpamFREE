@@ -7,7 +7,12 @@
     <string name="unknown_error">An unknown error occurred</string>
     <string name="share_code_subject">Add me on SpamFree, using this code: </string>
     <string name="share_code_title">Share using</string>
+    <string name="wrong_code">Wrong code. Try again</string>
+    <string name="own_code_error">You can\'t use one of your own codes!</string>
+    <string name="request_sent">Request sent</string>
+    <string name="used_code">This code has already been used.</string>
 
+    <!-- Misc -->
     <string name="title_activity_main">MainActivity</string>
     <string name="tab_requests">Requests</string>
     <string name="tab_chats">Chats</string>
@@ -21,6 +26,10 @@
     <string name="user_default_status">Hi there, I am using SpamFree</string>
     <string name="default_user_image_name">default</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Request Response Message -->
+    <string name="inexistent_code">This code doesn\'t exist! Try again.</string>
+    <string name="req_code_unusable">The code you entered is not valid!</string>
+    <string name="existing_req">You have already sent a request to that person!</string>
+    <string name="existing_chat">You are already chatting with that persons</string>
+
 </resources>

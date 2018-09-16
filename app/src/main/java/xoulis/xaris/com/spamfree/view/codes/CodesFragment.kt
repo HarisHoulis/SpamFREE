@@ -98,7 +98,7 @@ class CodesFragment : Fragment() {
     }
 
     private fun updateCodeMessages(codeId: String, messages: String) {
-        val query = userCodesDbRef.orderByChild("id").equalTo(codeId)
+        val query = userCodesDbRef().orderByChild("id").equalTo(codeId)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {}
 
@@ -112,7 +112,7 @@ class CodesFragment : Fragment() {
     }
 
     private fun fetchUnusedCode() {
-        val query = userCodesDbRef.orderByChild("used").equalTo(false).limitToFirst(1)
+        val query = userCodesDbRef().orderByChild("used").equalTo(false).limitToFirst(1)
         query.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (!snapshot.hasChildren()) {
@@ -138,7 +138,7 @@ class CodesFragment : Fragment() {
         binding.showShimmer = true
         binding.shimmerViewContainer.startShimmer()
 
-        val query = userCodesDbRef.orderByChild("used").equalTo(true).limitToFirst(10)
+        val query = userCodesDbRef().orderByChild("used").equalTo(true).limitToFirst(10)
         val options =
             FirebaseRecyclerOptions.Builder<ClientCode>()
                 .setLifecycleOwner(this)
@@ -200,10 +200,5 @@ class CodesFragment : Fragment() {
             itemBinding.code = code
             itemBinding.executePendingBindings()
         }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = CodesFragment()
     }
 }

@@ -86,7 +86,7 @@ class SettingsActivity : AppCompatActivity() {
             val tempUser = it.apply {
                 image = imageUrl
             }
-            userDbRef.setValue(tempUser)
+            userDbRef().setValue(tempUser)
         }
     }
 
@@ -104,7 +104,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun updateUserStatus(newStatus: String, user: User) {
         if (newStatus != user.status) {
-            userDbRef.child("status").setValue(newStatus)
+            userDbRef().child("status").setValue(newStatus)
         }
     }
 }

@@ -3,10 +3,13 @@ package xoulis.xaris.com.spamfree.util
 import android.content.Context
 import android.support.v7.app.AlertDialog
 import android.text.Editable
+import android.text.InputFilter
+import android.text.InputType
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,7 +17,13 @@ import org.w3c.dom.Text
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.enableView
 
-class CustomDialogHelper(context: Context, val title: String, val text: String) {
+class CustomDialogHelper(
+    context: Context,
+    val title: String,
+    val message: String,
+    val inputType: Int,
+    private val filter: InputFilter?
+) {
 
     private val dialogView: View by lazy {
         LayoutInflater.from(context).inflate(R.layout.custom_edit_text_dialog, null)
@@ -34,8 +43,15 @@ class CustomDialogHelper(context: Context, val title: String, val text: String) 
 
     fun create(): AlertDialog {
         titleTextView.text = title
-        editText.setText(text)
+        editText.apply {
+            inputType = inputType
+            if (filter != null) {
+                filters = arrayOf(filter)
+            }
+            setText(message)
+        }
         dialog = builder.create()
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         return dialog
     }
 
@@ -50,7 +66,7 @@ class CustomDialogHelper(context: Context, val title: String, val text: String) 
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 with(p0.toString()) {
-                    okButton.enableView(!(this == text || this.isBlank()))
+                    okButton.enableView(!(this == message || this.isBlank()))
                 }
             }
 
