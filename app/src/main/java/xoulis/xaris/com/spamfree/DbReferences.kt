@@ -6,7 +6,16 @@ import com.google.firebase.database.FirebaseDatabase
 /* Firebase */
 private const val CHILD_USERS = "users"
 private const val CHILD_CODES = "codes"
-private val UID = FirebaseAuth.getInstance().uid
+const val CHILD_INCOMING_REQUESTS = "incoming_requests"
+const val CHILD_OUTGOING_REQUESTS = "outgoing_requests"
 
-val userDbRef =  FirebaseDatabase.getInstance().reference.child(CHILD_USERS).child(UID!!)
-val userCodesDbRef = userDbRef.child(CHILD_CODES)
+val uid = { FirebaseAuth.getInstance().uid!! }
+val userDisplayName = { FirebaseAuth.getInstance().currentUser!!.displayName!! }
+
+val codesDbRef = FirebaseDatabase.getInstance().reference.child(CHILD_CODES)
+val userDbRef = { FirebaseDatabase.getInstance().reference.child(CHILD_USERS).child(uid()) }
+val userCodesDbRef = { userDbRef().child(CHILD_CODES) }
+val incomingRequestsRef =
+    { FirebaseDatabase.getInstance().reference.child(CHILD_INCOMING_REQUESTS).child(uid()) }
+val outgoingRequestsRef =
+    { FirebaseDatabase.getInstance().reference.child(CHILD_OUTGOING_REQUESTS).child(uid()) }

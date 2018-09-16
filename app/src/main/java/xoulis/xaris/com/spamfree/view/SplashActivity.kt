@@ -10,12 +10,16 @@ import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.messaging.FirebaseMessaging
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.User
+import xoulis.xaris.com.spamfree.uid
 import xoulis.xaris.com.spamfree.userDbRef
 import java.util.*
 import kotlin.collections.HashMap
@@ -59,11 +63,11 @@ class SplashActivity : AppCompatActivity() {
 
         if (requestCode == RC_SIGN_IN) {
             val response = IdpResponse.fromResultIntent(data)
-
             if (resultCode == RESULT_OK && response != null) {
                 if (response.isNewUser) {
                     addUserToDb()
                 }
+                addDeviceTokenToDb()
                 showMainActivity()
             } else {
                 val errorMessage = when (response) {
@@ -85,7 +89,15 @@ class SplashActivity : AppCompatActivity() {
             getString(R.string.user_default_status),
             getString(R.string.default_user_image_name)
         )
-        userDbRef.setValue(user)
+        userDbRef().setValue(user)
+    }
+
+    private fun addDeviceTokenToDb() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener { task ->
+                val token = task.result.token
+                userDbRef().child("deviceTokens/$token").setValue(true)
+            }
     }
 
     private fun showMainActivity() {

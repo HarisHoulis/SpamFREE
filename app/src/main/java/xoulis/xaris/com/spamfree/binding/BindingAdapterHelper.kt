@@ -3,12 +3,14 @@ package xoulis.xaris.com.spamfree.binding
 import android.databinding.BindingAdapter
 import android.text.TextUtils
 import android.widget.ImageView
+import android.widget.TextView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.data.vo.ChatRequest
 
-@BindingAdapter("userImage")
-fun loadUserImage(view: CircleImageView, imageUrl: String?) {
+@BindingAdapter("loadUserImage")
+fun loadUserImage(view: CircleImageView, imageUrl: String) {
     if (TextUtils.isEmpty(imageUrl) || imageUrl == view.context.getString(R.string.default_user_image_name)) {
         return
     }
@@ -17,4 +19,14 @@ fun loadUserImage(view: CircleImageView, imageUrl: String?) {
         .load(imageUrl)
         .error(R.drawable.ic_default_avatar)
         .into(view)
+}
+
+@BindingAdapter("setRequestDisplayName")
+fun setRequestDisplayName(view: TextView, request: ChatRequest) {
+    val name = if (request.incoming) {
+        "From: ${request.senderName}"
+    } else {
+        "To: ${request.receiverName}"
+    }
+    view.text = name
 }
