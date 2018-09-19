@@ -45,9 +45,10 @@ inline fun Context.getDialog(
     text: String = "",
     inputType: Int = InputType.TYPE_CLASS_TEXT,
     filter: InputFilter? = null,
+    autoDismiss: Boolean = true,
     f: CustomDialogHelper.() -> Unit
 ): AlertDialog =
-    CustomDialogHelper(this, title, text, inputType, filter).apply {
+    CustomDialogHelper(this, title, text, inputType, filter, autoDismiss).apply {
         f()
     }.create()
 

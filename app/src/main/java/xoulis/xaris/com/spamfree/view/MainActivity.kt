@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
         object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
                 p1?.getStringExtra(REQUEST_RESPONSE_EXTRA)?.let {
-                    Log.i("req111", "req_snack")
                     val decodedMessage = it.decodeRequestResponseMessage()
+                    requestResponseListener.onRequestResponseReceived()
                     main_content.showSnackBar(decodedMessage)
                 }
             }
@@ -40,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
+
+    private lateinit var requestResponseListener: OnRequestResponseListener
 
     override fun onResume() {
         super.onResume()
@@ -103,6 +105,10 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    fun setRequestResponseListener(listener: OnRequestResponseListener) {
+        this.requestResponseListener = listener
+    }
+
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
         override fun getItem(position: Int): Fragment {
@@ -116,5 +122,9 @@ class MainActivity : AppCompatActivity() {
         override fun getCount(): Int {
             return 3
         }
+    }
+
+    interface OnRequestResponseListener {
+        fun onRequestResponseReceived()
     }
 }

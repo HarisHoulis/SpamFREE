@@ -22,7 +22,8 @@ class CustomDialogHelper(
     val title: String,
     val message: String,
     val inputType: Int,
-    private val filter: InputFilter?
+    private val filter: InputFilter?,
+    private val autoDismiss: Boolean
 ) {
 
     private val dialogView: View by lazy {
@@ -58,7 +59,9 @@ class CustomDialogHelper(
     fun setOkButtonClickListener(f: (userInput: String) -> (Unit)) {
         okButton.setOnClickListener {
             f(editText.text.toString())
-            dialog.dismiss()
+            if (autoDismiss) {
+                dialog.dismiss()
+            }
         }
     }
 
