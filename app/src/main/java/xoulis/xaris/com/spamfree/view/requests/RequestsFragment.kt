@@ -43,26 +43,20 @@ class RequestsFragment : Fragment() {
         setupSentRequestsRecyclerView()
     }
 
-    fun onAcceptRequestClick(view: View) {
-        val itemPos = requests_received_recyclerView.getChildAdapterPosition(view)
-        val itemRef = incomingReqAdapter.getRef(itemPos)
-        itemRef.child("status").setValue(1)
+    fun onAcceptRequestClick(pos: Int) {
+        val itemRef = incomingReqAdapter.getRef(pos)
+        itemRef.child("status").setValue(RequestStatus.ACCEPTED)
             .addOnSuccessListener {
                 itemRef.removeValue()
             }
-
-        Log.i("req122", "req accepted")
     }
 
-    fun onRejectRequestClick(view: View) {
-        val itemPos = requests_received_recyclerView.getChildAdapterPosition(view)
-        val itemRef = incomingReqAdapter.getRef(itemPos)
-        itemRef.child("status").setValue(2)
+    fun onRejectRequestClick(pos: Int) {
+        val itemRef = incomingReqAdapter.getRef(pos)
+        itemRef.child("status").setValue(RequestStatus.REJECTED)
             .addOnSuccessListener {
                 itemRef.removeValue()
             }
-
-        Log.i("req122", "req rejected")
     }
 
     private fun setupIncomingRequestsRecyclerView() {
@@ -85,16 +79,6 @@ class RequestsFragment : Fragment() {
                         model: ChatRequest
                     ) {
                         holder.bind(model)
-                    }
-
-                    override fun onChildChanged(
-                        type: ChangeEventType,
-                        snapshot: DataSnapshot,
-                        newIndex: Int,
-                        oldIndex: Int
-                    ) {
-                        val s = 4
-                        super.onChildChanged(type, snapshot, newIndex, oldIndex)
                     }
                 }
         requests_received_recyclerView.setHasFixedSize(true)
@@ -134,10 +118,20 @@ class RequestsFragment : Fragment() {
 
         fun bind(request: ChatRequest) {
             itemBinding.request = request
-            if (request.incoming) {
-                itemBinding.handler = this@RequestsFragment
-            }
+            setListeners(request.incoming)
             itemBinding.executePendingBindings()
+        }
+
+        private fun setListeners(incomingReq: Boolean) {
+            if (incomingReq) {
+                itemBinding.acceptRequestButton.setOnClickListener {
+                    onAcceptRequestClick(adapterPosition)
+                }
+
+                itemBinding.declineRequestButton.setOnClickListener {
+                    onRejectRequestClick(adapterPosition)
+                }
+            }
         }
     }
 }

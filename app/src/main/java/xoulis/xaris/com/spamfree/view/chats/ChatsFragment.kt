@@ -1,27 +1,25 @@
 package xoulis.xaris.com.spamfree.view.chats
 
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
+import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import kotlinx.android.synthetic.main.fragment_chats.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
-
-import xoulis.xaris.com.spamfree.data.vo.ClientCode
-import xoulis.xaris.com.spamfree.data.vo.RequestStatus
+import xoulis.xaris.com.spamfree.view.MainActivity
 
 class ChatsFragment : Fragment() {
+
+    private lateinit var newRequestDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +36,13 @@ class ChatsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as MainActivity).setRequestResponseListener(object :
+            MainActivity.OnRequestResponseListener {
+            override fun onRequestResponseReceived() {
+                newRequestDialog.dismiss()
+            }
+        })
+
         new_chat_fab.setOnClickListener { _ ->
             showNewRequestDialog()
         }
@@ -45,16 +50,22 @@ class ChatsFragment : Fragment() {
 
     private fun showNewRequestDialog() {
         val title = "Create new chat room"
-        val dialog = context!!.getDialog(
+        newRequestDialog = context!!.getDialog(
             title = title,
             inputType = InputType.TYPE_CLASS_NUMBER,
-            filter = InputFilter.LengthFilter(5)
+            filter = InputFilter.LengthFilter(5),
+            autoDismiss = false
         ) {
             setOkButtonClickListener { codeId ->
+                newRequestDialog.custom_dialog_ok_button.apply {
+                    isEnabled = false
+                    alpha = 0.5f
+                }
+                newRequestDialog.custom_dialog_progressBar.visibility = View.VISIBLE
                 sendRequest(codeId)
             }
         }
-        dialog.show()
+        newRequestDialog.show()
     }
 
     private fun sendRequest(codeId: String) {
@@ -66,9 +77,7 @@ class ChatsFragment : Fragment() {
                     codeId = codeId,
                     senderToken = token
                 )
-                outgoingRequestsRef().child(codeId).setValue(request)
-                Log.i("req111", "reqSent")
+                uncheckedRequestsRef().child(codeId).setValue(request)
             }
-
     }
 }
