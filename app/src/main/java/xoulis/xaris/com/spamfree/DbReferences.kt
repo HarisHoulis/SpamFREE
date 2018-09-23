@@ -5,7 +5,7 @@ import com.google.firebase.database.FirebaseDatabase
 
 /* Firebase */
 private const val CHILD_USERS = "users"
-private const val CHILD_CODES = "codes"
+private const val CHILD_CODES = "client_codes"
 const val CHILD_INCOMING_REQUESTS = "incoming_requests"
 const val CHILD_OUTGOING_REQUESTS = "outgoing_requests"
 const val CHILD_UNCHECKED_OUTGOING_REQUESTS = "unchecked_outgoing_requests"

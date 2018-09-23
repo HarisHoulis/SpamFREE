@@ -64,8 +64,9 @@ fun Context.isNetworkAvailable(): Boolean {
 fun String.decodeRequestResponseMessage(): Int {
     return when (this) {
         "0" -> R.string.inexistent_code
+        "1" -> R.string.req_code_unusable
         "2" -> R.string.existing_req
         "3" -> R.string.existing_chat
-        else -> R.string.req_code_unusable
+        else -> R.string.req_sent_successfully
     }
 }
