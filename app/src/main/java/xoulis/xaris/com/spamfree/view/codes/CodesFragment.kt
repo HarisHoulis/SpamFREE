@@ -59,11 +59,11 @@ class CodesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupUsedCodesRecyclerView()
-        fetchUnusedCode()
+        //setupUsedCodesRecyclerView()
+        //fetchUnusedCode()
 
-        setCodeLongClickListener()
-        setUnusedCodeMessagesClickListener()
+        //setCodeLongClickListener()
+        //setUnusedCodeMessagesClickListener()
     }
 
     private fun setCodeLongClickListener() {

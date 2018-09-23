@@ -31,5 +31,6 @@
     <string name="req_code_unusable">The code you entered is not valid!</string>
     <string name="existing_req">You have already sent a request to that person!</string>
     <string name="existing_chat">You are already chatting with that persons</string>
+    <string name="req_sent_successfully">Your request was sent successfully</string>
 
 </resources>

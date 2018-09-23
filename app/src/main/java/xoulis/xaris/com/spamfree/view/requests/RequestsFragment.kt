@@ -1,7 +1,6 @@
 package xoulis.xaris.com.spamfree.view.requests
 
 
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -10,16 +9,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.firebase.ui.database.ObservableSnapshotArray
-import com.firebase.ui.database.SnapshotParser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.fragment_requests.*
 import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.data.vo.Chat
 
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
 import xoulis.xaris.com.spamfree.data.vo.RequestStatus
@@ -43,20 +39,51 @@ class RequestsFragment : Fragment() {
         setupSentRequestsRecyclerView()
     }
 
-    fun onAcceptRequestClick(pos: Int) {
+    fun onAcceptRequestClick(pos: Int, request: ChatRequest) {
         val itemRef = incomingReqAdapter.getRef(pos)
-        itemRef.child("status").setValue(RequestStatus.ACCEPTED)
+        itemRef.child("status")
+            .setValue(RequestStatus.ACCEPTED)
+            .addOnSuccessListener {
+                itemRef.removeValue()
+            }
+        createNewChat(request)
+    }
+
+    fun onRejectRequestClick(pos: Int) {
+        val itemRef = incomingReqAdapter.getRef(pos)
+        itemRef.child("status")
+            .setValue(RequestStatus.REJECTED)
             .addOnSuccessListener {
                 itemRef.removeValue()
             }
     }
 
-    fun onRejectRequestClick(pos: Int) {
-        val itemRef = incomingReqAdapter.getRef(pos)
-        itemRef.child("status").setValue(RequestStatus.REJECTED)
-            .addOnSuccessListener {
-                itemRef.removeValue()
-            }
+    private fun createNewChat(request: ChatRequest) {
+        val codeId = request.codeId
+        val ownerId = request.receiverId
+        val memberId = request.senderId
+        val ownerImage = request.receiverImage
+        val ownerName = request.receiverName
+        val memberImage = request.senderImage
+        val messagesLimit = request.messages
+        val db = FirebaseDatabase.getInstance()
+
+        // Create new chat
+        db.getReference("/chats/$codeId").setValue(
+            Chat(
+                codeId,
+                ownerId,
+                ownerImage,
+                memberImage,
+                ownerName,
+                userDisplayName(),
+                messages = messagesLimit
+            )
+        )
+
+        // Add chat to /user_chats for each user
+        db.getReference("/user_chats/$ownerId/$codeId").setValue(true)
+        db.getReference("/user_chats/$memberId/$codeId").setValue(true)
     }
 
     private fun setupIncomingRequestsRecyclerView() {
@@ -118,19 +145,19 @@ class RequestsFragment : Fragment() {
 
         fun bind(request: ChatRequest) {
             itemBinding.request = request
-            setListeners(request.incoming)
+            if (request.incoming) {
+                setListeners(request)
+            }
             itemBinding.executePendingBindings()
         }
 
-        private fun setListeners(incomingReq: Boolean) {
-            if (incomingReq) {
-                itemBinding.acceptRequestButton.setOnClickListener {
-                    onAcceptRequestClick(adapterPosition)
-                }
+        private fun setListeners(request: ChatRequest) {
+            itemBinding.acceptRequestButton.setOnClickListener {
+                onAcceptRequestClick(adapterPosition, request)
+            }
 
-                itemBinding.declineRequestButton.setOnClickListener {
-                    onRejectRequestClick(adapterPosition)
-                }
+            itemBinding.declineRequestButton.setOnClickListener {
+                onRejectRequestClick(adapterPosition)
             }
         }
     }

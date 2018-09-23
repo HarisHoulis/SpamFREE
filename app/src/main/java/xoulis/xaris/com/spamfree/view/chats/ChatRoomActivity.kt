@@ -20,7 +20,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private fun initToolbar(title: String) {
-        setSupportActionBar(chat_room_toolbar);
+        setSupportActionBar(chat_room_toolbar)
         actionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
