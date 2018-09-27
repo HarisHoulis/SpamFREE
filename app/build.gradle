@@ -26,44 +26,59 @@ android {
     dataBinding {
         enabled = true
     }
+    lintOptions {
+        check 'Interoperability'
+    }
+    androidExtensions {
+        experimental = true
+    }
     buildToolsVersion '28.0.2'
 }
 
 dependencies {
-    implementation "com.android.support:support-v4:$support_version"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     //    Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    //    Support library
+
+    //    Support libraries
+    implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:customtabs:$support_version"
     implementation "com.android.support:support-v4:$support_version"
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation "com.android.support.constraint:constraint-layout:$constraint_verison"
     implementation "com.android.support:exifinterface:$support_version"
     implementation "com.android.support:recyclerview-v7:$support_version"
-    //    Firebase
-    implementation 'com.google.firebase:firebase-auth:16.0.3'
-    implementation 'com.google.firebase:firebase-database:16.0.2'
-    implementation 'com.google.firebase:firebase-storage:16.0.2'
-    implementation 'com.google.firebase:firebase-messaging:17.3.2'
-    implementation 'com.firebaseui:firebase-ui-auth:4.1.0'
-    implementation 'com.firebaseui:firebase-ui-database:4.1.0'
-    //    Picasso
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    //    ImageView and ImageCropper
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
-    //    Shimmer
-    implementation 'com.facebook.shimmer:shimmer:0.3.0'
-    //    Material Progress Bar
-    implementation 'me.zhanghai.android.materialprogressbar:library:1.4.2'
+
     //    Architecture Components
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
     kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    //    Firebase
+    implementation "com.google.firebase:firebase-core:$firebase_core_version"
+    implementation "com.google.firebase:firebase-auth:$firebase_auth_version"
+    implementation "com.google.firebase:firebase-database:$firebase_db_version"
+    implementation "com.google.firebase:firebase-storage:$firebase_storage_version"
+    implementation "com.google.firebase:firebase-messaging:$firebase_messaging_version"
+    implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
+    implementation "com.firebaseui:firebase-ui-database:$firebase_ui_db_version"
+
+    //    Picasso
+    implementation "com.squareup.picasso:picasso:$picasso_version"
+
+    //    ImageView and ImageCropper
+    implementation "de.hdodenhof:circleimageview:$circle_image_view_version"
+    implementation "com.theartofdev.edmodo:android-image-cropper:$image_cropper_version"
+
+    //    Shimmer
+    implementation "com.facebook.shimmer:shimmer:$shimmer_version"
+
+    //    Material Progress Bar
+    implementation "me.zhanghai.android.materialprogressbar:library:$material_progress_bar_version"
 }
 
 apply plugin: 'com.google.gms.google-services'
