@@ -1,6 +1,7 @@
 package xoulis.xaris.com.spamfree.view.chats
 
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
@@ -79,7 +80,8 @@ class ChatsFragment : Fragment() {
         }
 
         chats_recyclerView.setHasFixedSize(true)
-        chats_recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        chats_recyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         chats_recyclerView.adapter = adapter
     }
 
@@ -116,11 +118,21 @@ class ChatsFragment : Fragment() {
             }
     }
 
+    private fun showChatRoom(chat: Chat) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            putExtra(CHAT_EXTRA, chat)
+        }
+        startActivity(intent)
+    }
+
     inner class ChatsViewHolder(private val itemBinding: ListItemChatBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(chat: Chat) {
             itemBinding.chat = chat
+            itemBinding.root.setOnClickListener {
+
+            }
             itemBinding.executePendingBindings()
         }
 

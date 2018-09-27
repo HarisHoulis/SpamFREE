@@ -6,8 +6,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import xoulis.xaris.com.spamfree.MESSAGE_TIMESTAMP_FORMAT
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
+import java.text.SimpleDateFormat
+import java.util.*
 
 @BindingAdapter("loadUserImage")
 fun loadUserImage(view: CircleImageView, imageUrl: String) {
@@ -29,4 +32,15 @@ fun setRequestDisplayName(view: TextView, request: ChatRequest) {
         "To: ${request.receiverName}"
     }
     view.text = name
+}
+
+@BindingAdapter("messageTimestamp")
+fun setMessageTimestamp(view: TextView, timestamp: Long) {
+    val sdf by lazy {
+        SimpleDateFormat(MESSAGE_TIMESTAMP_FORMAT, Locale.getDefault())
+    }
+
+    val date = Date(timestamp)
+    val formattedTime = sdf.format(date)
+    view.text = formattedTime
 }
