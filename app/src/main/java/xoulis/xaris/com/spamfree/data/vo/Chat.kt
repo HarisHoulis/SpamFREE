@@ -2,13 +2,12 @@ package xoulis.xaris.com.spamfree.data.vo
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.versionedparcelable.ParcelField
 import androidx.versionedparcelable.VersionedParcelize
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.ServerValue
-import kotlinx.android.parcel.IgnoredOnParcel
-import kotlinx.android.parcel.Parceler
-import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
+import kotlinx.android.parcel.*
+import java.lang.Exception
 
 @Parcelize
 data class Chat(
@@ -19,10 +18,12 @@ data class Chat(
     val ownerName: String = "",
     val memberName: String = "",
     val lastMessage: String = "",
-    val lastMessageDate: @RawValue HashMap<String, Any> = hashMapOf("timestamp" to ServerValue.TIMESTAMP),
+    val timestamp: @RawValue Any = ServerValue.TIMESTAMP,
     val messages: String = ""
 ) : Parcelable {
 
     @Exclude
-    fun getTimestampLong() = lastMessageDate["timestamp"] as Long
+    fun getTimestampLong(): Long {
+        return timestamp as Long
+    }
 }

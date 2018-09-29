@@ -11,5 +11,7 @@ data class ChatMessage(
     val timestamp: Any = ServerValue.TIMESTAMP
 ) {
     @Exclude
-    fun getTimestampLong() = timestamp as Long
+    fun getTimestampLong(): Long {
+        return timestamp as Long
+    }
 }

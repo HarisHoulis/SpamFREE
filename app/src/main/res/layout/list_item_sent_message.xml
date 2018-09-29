@@ -21,8 +21,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:background="@drawable/rounded_rectangle_white"
-            android:padding="8dp"
+            android:gravity="center"
+            android:paddingStart="12dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
             android:text="@{chatMessage.message}"
+            android:textAlignment="center"
+            android:textSize="16sp"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -34,9 +40,10 @@
             android:id="@+id/sent_message_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
+            app:messageTimestamp="@{chatMessage.getTimestampLong}"
             app:layout_constraintEnd_toEndOf="@+id/sent_message_body"
             app:layout_constraintTop_toBottomOf="@+id/sent_message_body"
-            app:messageTimestamp="@{chatMessage.getTimestampLong}"
             tools:text="13:33" />
 
         <android.support.constraint.Guideline
