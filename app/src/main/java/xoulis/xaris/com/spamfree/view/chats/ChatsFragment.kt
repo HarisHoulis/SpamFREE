@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,7 +120,7 @@ class ChatsFragment : Fragment() {
     }
 
     private fun showChatRoom(chat: Chat) {
-        val intent = Intent(context, MainActivity::class.java).apply {
+        val intent = Intent(context, ChatRoomActivity::class.java).apply {
             putExtra(CHAT_EXTRA, chat)
         }
         startActivity(intent)
@@ -131,7 +132,7 @@ class ChatsFragment : Fragment() {
         fun bind(chat: Chat) {
             itemBinding.chat = chat
             itemBinding.root.setOnClickListener {
-
+                showChatRoom(chat)
             }
             itemBinding.executePendingBindings()
         }

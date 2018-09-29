@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         viewPager.adapter = mSectionsPagerAdapter
-        viewPager.offscreenPageLimit = 3
+        viewPager.offscreenPageLimit = 4
 
         // Implement swipe views
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))

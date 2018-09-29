@@ -13,14 +13,15 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp">
+        android:padding="16dp"
+        android:background="?attr/selectableItemBackground">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/item_chat_user_imageView"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            app:chatImage="@{chat}"
             android:src="@drawable/ic_default_avatar"
+            app:chatImage="@{chat}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -30,9 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:fontFamily="sans-serif-medium"
+            app:chatUsername="@{chat}"
             app:layout_constraintStart_toEndOf="@+id/item_chat_user_imageView"
             app:layout_constraintTop_toTopOf="parent"
-            app:chatUsername="@{chat}"
             tools:text="Xaris" />
 
         <TextView
