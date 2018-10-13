@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">SpamFree</string>
 
+    <string name="default_notification_channel_id" translatable="false">fcm_notification_channel_id</string>
+    <string name="default_notification_channel_name" translatable="false">New Messages</string>
+
     <!-- Error/Info messages -->
     <string name="sign_in_cancelled">Sign in cancelled</string>
     <string name="no_internet_connection">No internet connection</string>
