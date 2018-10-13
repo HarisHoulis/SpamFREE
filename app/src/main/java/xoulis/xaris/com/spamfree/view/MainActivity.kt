@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -25,14 +26,14 @@ import xoulis.xaris.com.spamfree.view.codes.CodesFragment
 import xoulis.xaris.com.spamfree.view.requests.RequestsFragment
 import xoulis.xaris.com.spamfree.view.settings.SettingsActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
 
     private val requestResponseReceiver by lazy {
         object : BroadcastReceiver() {
             override fun onReceive(p0: Context?, p1: Intent?) {
                 p1?.getStringExtra(REQUEST_RESPONSE_EXTRA)?.let {
                     val decodedMessage = it.decodeRequestResponseMessage()
-                    requestResponseListener.onRequestResponseReceived()
+                    requestResponseListener?.onRequestResponseReceived()
                     main_content.showSnackBar(decodedMessage)
                 }
             }
@@ -41,20 +42,11 @@ class MainActivity : AppCompatActivity() {
 
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
-    private lateinit var requestResponseListener: OnRequestResponseListener
+    private var requestResponseListener: OnRequestResponseListener? = null
+    private var newMessageNotificationListener: OnNewMessageNotificationListener? = null
 
-    override fun onResume() {
-        super.onResume()
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(
-                requestResponseReceiver, IntentFilter(
-                    REQUEST_RESPONSE_RECEIVED
-                )
-            )
-    }
-
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         LocalBroadcastManager.getInstance(this)
             .unregisterReceiver(requestResponseReceiver)
     }
@@ -67,11 +59,19 @@ class MainActivity : AppCompatActivity() {
 
         mSectionsPagerAdapter = SectionsPagerAdapter(supportFragmentManager)
         viewPager.adapter = mSectionsPagerAdapter
-        viewPager.offscreenPageLimit = 4
+        viewPager.offscreenPageLimit = 3
 
         // Implement swipe views
         viewPager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabLayout))
         tabLayout.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(viewPager))
+
+        // Register request response receiver
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(
+                requestResponseReceiver, IntentFilter(
+                    REQUEST_RESPONSE_RECEIVED
+                )
+            )
     }
 
 
@@ -105,8 +105,20 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    override fun onChatsFetched() {
+        intent.getStringExtra(CHAT_ID_EXTRA)?.let { chatId ->
+            intent.removeExtra(CHAT_ID_EXTRA)
+            viewPager.currentItem = 1
+            newMessageNotificationListener?.onNewMessageNotificationReceived(chatId)
+        }
+    }
+
     fun setRequestResponseListener(listener: OnRequestResponseListener) {
         this.requestResponseListener = listener
+    }
+
+    fun setNewMessageNotificationListener(listener: OnNewMessageNotificationListener) {
+        this.newMessageNotificationListener = listener
     }
 
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
@@ -126,5 +138,9 @@ class MainActivity : AppCompatActivity() {
 
     interface OnRequestResponseListener {
         fun onRequestResponseReceived()
+    }
+
+    interface OnNewMessageNotificationListener {
+        fun onNewMessageNotificationReceived(chatId: String)
     }
 }

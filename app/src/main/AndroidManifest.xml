@@ -18,6 +18,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- [START fcm id auto-init] -->
+        <meta-data
+            android:name="firebase_messaging_auto_init_enabled"
+            android:value="false" />
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+        <!-- [ND fcm id auto-init] -->
+        <!-- [START fcm_default_channel] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+        <!-- [END fcm_default_channel] -->
         <activity
             android:name=".view.SplashActivity"
             android:launchMode="singleTop"
@@ -31,15 +44,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".view.MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".view.settings.SettingsActivity"
             android:launchMode="singleTop"
             android:parentActivityName=".view.MainActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".view.chats.ChatRoomActivity"
             android:launchMode="singleTop"

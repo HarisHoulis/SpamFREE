@@ -1,7 +1,10 @@
 package xoulis.xaris.com.spamfree.view
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -17,10 +20,8 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
-import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
-import xoulis.xaris.com.spamfree.uid
-import xoulis.xaris.com.spamfree.userDbRef
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -38,6 +39,8 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
+
+        createNotificationChannel()
 
         val auth = FirebaseAuth.getInstance()
 
@@ -67,7 +70,7 @@ class SplashActivity : AppCompatActivity() {
                 if (response.isNewUser) {
                     addUserToDb()
                 }
-                addDeviceTokenToDb()
+                FirebaseMessaging.getInstance().isAutoInitEnabled = true
                 showMainActivity()
             } else {
                 val errorMessage = when (response) {
@@ -92,17 +95,27 @@ class SplashActivity : AppCompatActivity() {
         userDbRef().setValue(user)
     }
 
-    private fun addDeviceTokenToDb() {
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener { task ->
-                val token = task.result.token
-                userDbRef().child("deviceTokens/$token").setValue(true)
-            }
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channelId = getString(R.string.default_notification_channel_id)
+            val channelName = getString(R.string.default_notification_channel_name)
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(
+                NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            )
+        }
     }
 
     private fun showMainActivity() {
-        intent = Intent(this@SplashActivity, MainActivity::class.java)
-        startActivity(intent)
+        val mainActivityIntent = Intent(this@SplashActivity, MainActivity::class.java)
+        intent.extras?.getString(FCM_CHAT_ID_KEY)?.let {
+            mainActivityIntent.putExtra(CHAT_ID_EXTRA, it)
+        }
+        startActivity(mainActivityIntent)
         finish()
     }
 

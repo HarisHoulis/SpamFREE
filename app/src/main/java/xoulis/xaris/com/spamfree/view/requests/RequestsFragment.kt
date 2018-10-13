@@ -81,9 +81,12 @@ class RequestsFragment : Fragment() {
             )
         )
 
+        val membersMap = mapOf(ownerId to true, memberId to true)
+        // Add chat's members to /chat_members
+        db.getReference("/chat_members/$codeId/").setValue(membersMap)
+
         // Add chat to /user_chats for each user
-        db.getReference("/user_chats/$ownerId/$codeId").setValue(true)
-        db.getReference("/user_chats/$memberId/$codeId").setValue(true)
+        db.getReference("/user_chats/$ownerId").setValue(membersMap)
     }
 
     private fun setupIncomingRequestsRecyclerView() {
