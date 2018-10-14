@@ -1,15 +1,13 @@
 package xoulis.xaris.com.spamfree.view.chats
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -17,7 +15,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import kotlinx.android.synthetic.main.activity_chat_room.*
-import kotlinx.android.synthetic.main.notification_template_part_time.*
 import xoulis.xaris.com.spamfree.CHAT_EXTRA
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.Chat
@@ -26,7 +23,6 @@ import xoulis.xaris.com.spamfree.databinding.ListItemReceivedMessageBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSentMessageBinding
 import xoulis.xaris.com.spamfree.enableView
 import xoulis.xaris.com.spamfree.uid
-import java.lang.Exception
 
 class ChatRoomActivity : AppCompatActivity() {
 

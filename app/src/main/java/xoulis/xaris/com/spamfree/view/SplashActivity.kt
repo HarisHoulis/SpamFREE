@@ -1,29 +1,24 @@
 package xoulis.xaris.com.spamfree.view
 
-import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.util.Log
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
-import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.CHAT_ID_EXTRA
+import xoulis.xaris.com.spamfree.FCM_CHAT_ID_KEY
+import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.User
+import xoulis.xaris.com.spamfree.userDbRef
 import java.util.*
-import kotlin.collections.HashMap
 
 class SplashActivity : AppCompatActivity() {
 
