@@ -86,7 +86,8 @@ class RequestsFragment : Fragment() {
         db.getReference("/chat_members/$codeId/").setValue(membersMap)
 
         // Add chat to /user_chats for each user
-        db.getReference("/user_chats/$ownerId").setValue(membersMap)
+        db.getReference("/user_chats/$ownerId/$codeId").setValue(true)
+        db.getReference("/user_chats/$memberId/$codeId").setValue(true)
     }
 
     private fun setupIncomingRequestsRecyclerView() {
