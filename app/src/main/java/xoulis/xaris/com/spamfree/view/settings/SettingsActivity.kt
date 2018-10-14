@@ -8,6 +8,8 @@ import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
+import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -31,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
         val viewModel = ViewModelProviders.of(this).get(SettingsViewModel::class.java)
         viewModel.userLiveData.observe(this, Observer {
             it?.run {
+                val s = getValue(User::class.java)
                 binding.user = getValue(User::class.java)
                 binding.isLoading = false
             }
@@ -75,12 +78,21 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun updateUserPhotoPath(imageUrl: String) {
-        binding.user?.let {
-            val tempUser = it.apply {
-                image = imageUrl
+        // Update locally
+        binding.user?.apply { image = imageUrl }
+
+        // Update DB
+        userDbRef().child("image").setValue(imageUrl)
+
+        // Call server function
+        val data = hashMapOf("imageUrl" to imageUrl)
+        FirebaseFunctions
+            .getInstance()
+            .getHttpsCallable("updateUserImageInChats")
+            .call()
+            .addOnCompleteListener{task ->
+                Log.i("sdsdsd", task.exception.toString())
             }
-            userDbRef().setValue(tempUser)
-        }
     }
 
     fun onStatusChangeClick(user: User) {

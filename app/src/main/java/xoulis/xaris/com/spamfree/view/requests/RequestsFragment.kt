@@ -65,6 +65,14 @@ class RequestsFragment : Fragment() {
         val messagesLimit = request.messages
         val db = FirebaseDatabase.getInstance()
 
+        val membersMap = mapOf(ownerId to true, memberId to true)
+        // Add chat's members to /chat_members
+        db.getReference("/chat_members/$codeId/").setValue(membersMap)
+
+        // Add chat's ID to /user_chats for each user
+        db.getReference("/user_chats/$ownerId/$codeId").setValue(true)
+        db.getReference("/user_chats/$memberId/$codeId").setValue(true)
+
         // Create new chat
         db.getReference("/chats/$codeId").setValue(
             Chat(
@@ -77,14 +85,6 @@ class RequestsFragment : Fragment() {
                 messages = messagesLimit
             )
         )
-
-        val membersMap = mapOf(ownerId to true, memberId to true)
-        // Add chat's members to /chat_members
-        db.getReference("/chat_members/$codeId/").setValue(membersMap)
-
-        // Add chat to /user_chats for each user
-        db.getReference("/user_chats/$ownerId/$codeId").setValue(true)
-        db.getReference("/user_chats/$memberId/$codeId").setValue(true)
     }
 
     private fun setupIncomingRequestsRecyclerView() {
