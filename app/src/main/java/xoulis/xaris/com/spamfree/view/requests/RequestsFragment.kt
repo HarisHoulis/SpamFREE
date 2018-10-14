@@ -111,6 +111,11 @@ class RequestsFragment : Fragment() {
                     ) {
                         holder.bind(model)
                     }
+
+                    override fun onDataChanged() {
+                        super.onDataChanged()
+                        empty_incoming_requests_textView.showView(itemCount == 0)
+                    }
                 }
         requests_received_recyclerView.setHasFixedSize(true)
         requests_received_recyclerView.layoutManager =
@@ -137,6 +142,11 @@ class RequestsFragment : Fragment() {
                 model: ChatRequest
             ) {
                 holder.bind(model)
+            }
+
+            override fun onDataChanged() {
+                super.onDataChanged()
+                empty_outgoing_requests_textView.showView(itemCount == 0)
             }
         }
         requests_sent_recyclerView.setHasFixedSize(true)

@@ -31,11 +31,14 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
 import com.google.firebase.database.*
+import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
+import kotlinx.android.synthetic.main.fragment_chats.*
 import kotlinx.android.synthetic.main.fragment_codes.*
 import kotlinx.android.synthetic.main.list_item_secondary_code.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.data.vo.Chat
 
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
@@ -46,7 +49,9 @@ import java.lang.Exception
 
 class CodesFragment : Fragment() {
 
-    lateinit var binding: FragmentCodesBinding
+    private lateinit var binding: FragmentCodesBinding
+
+    private lateinit var codesAdapter: FirebaseRecyclerAdapter<ClientCode, RecyclerView.ViewHolder>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +65,10 @@ class CodesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fetchUserCodes()
+
+        add_new_code_fab.setOnClickListener {
+            requestNewCode()
+        }
     }
 
     private fun fetchUserCodes() {
@@ -70,11 +79,11 @@ class CodesFragment : Fragment() {
                 .setQuery(query, ClientCode::class.java)
                 .build()
 
-        val adapter =
+        codesAdapter =
             object : FirebaseRecyclerAdapter<ClientCode, RecyclerView.ViewHolder>(options) {
 
                 override fun getItemViewType(position: Int): Int {
-                    return if (position == 0) {
+                    return if (position == itemCount - 1) {
                         MOST_RECENT_CODE_VIEW_TYPE
                     } else {
                         SECONDARY_CODE_VIEW_TYPE
@@ -121,11 +130,27 @@ class CodesFragment : Fragment() {
         val recyclerView = binding.codesRecyclerView
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
+                    .apply {
+                        stackFromEnd = true
+                    }
         val divider = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         divider.setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
         recyclerView.addItemDecoration(divider)
-        recyclerView.adapter = adapter
+        recyclerView.adapter = codesAdapter
+    }
+
+    private fun requestNewCode() {
+        showLoading(true)
+        val functions = FirebaseFunctions.getInstance()
+        functions.getHttpsCallable("requestNewCode")
+            .call()
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    fragment_codes_root.showSnackBar(R.string.failed_to_add_new_code)
+                }
+                showLoading(false)
+            }
     }
 
     private fun View.setLongClickListener(codeId: String) {
@@ -164,6 +189,11 @@ class CodesFragment : Fragment() {
             .setValue(messages)
     }
 
+    private fun showLoading(enable: Boolean) {
+        binding.showLoading = enable
+        binding.addNewCodeFab.isEnabled = enable
+    }
+
     inner class MostRecentCodeViewHolder(private val itemBinding: ListItemMostRecentCodeBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
@@ -179,7 +209,7 @@ class CodesFragment : Fragment() {
         RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(code: ClientCode, position: Int) {
-            itemBinding.index = position + 1
+            itemBinding.index = codesAdapter .itemCount - position
             itemBinding.code = code
             if (!code.used) {
                 itemBinding.root.setLongClickListener(code.id)

@@ -16,6 +16,7 @@ buildscript {
         firebase_db_version = "16.0.2"
         firebase_storage_version = "16.0.2"
         firebase_messaging_version = "17.3.2"
+        firebase_functions_version = "16.1.0"
         firebase_ui_auth_version = "4.1.0"
         firebase_ui_db_version = "4.1.0"
         picasso_version = "2.71828"

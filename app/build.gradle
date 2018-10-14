@@ -66,6 +66,7 @@ dependencies {
     implementation "com.google.firebase:firebase-messaging:$firebase_messaging_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
     implementation "com.firebaseui:firebase-ui-database:$firebase_ui_db_version"
+    implementation "com.google.firebase:firebase-functions:$firebase_functions_version"
 
     //    Picasso
     implementation "com.squareup.picasso:picasso:$picasso_version"
