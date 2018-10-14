@@ -135,16 +135,24 @@ class ChatsFragment : Fragment() {
             filter = InputFilter.LengthFilter(5),
             autoDismiss = false
         ) {
-            setOkButtonClickListener { codeId ->
-                newRequestDialog.custom_dialog_ok_button.apply {
-                    isEnabled = false
-                    alpha = 0.5f
-                }
-                newRequestDialog.custom_dialog_progressBar.visibility = View.VISIBLE
-                sendRequest(codeId)
-            }
+            setOkButtonClickListener { codeId -> okButtonClicked(codeId) }
         }
         newRequestDialog.show()
+    }
+
+    private fun okButtonClicked(codeId: String) {
+        if (context!!.isNetworkAvailable()) {
+            newRequestDialog.dismiss()
+            fragment_chats_root.showSnackBar(R.string.detailed_error)
+        } else {
+            newRequestDialog.custom_dialog_ok_button.apply {
+                isEnabled = false
+                alpha = 0.5f
+            }
+            newRequestDialog.custom_dialog_progressBar.visibility = View.VISIBLE
+            newRequestDialog.setCancelable(false)
+            sendRequest(codeId)
+        }
     }
 
     private fun sendRequest(codeId: String) {
@@ -157,6 +165,12 @@ class ChatsFragment : Fragment() {
                     senderToken = token
                 )
                 uncheckedRequestsRef().child(codeId).setValue(request)
+                    .addOnCompleteListener { sendReqTask ->
+                        if (!sendReqTask.isSuccessful) {
+                            this@ChatsFragment.newRequestDialog.dismiss()
+                            fragment_chats_root.showSnackBar(R.string.detailed_error)
+                        }
+                    }
             }
     }
 

@@ -28,6 +28,14 @@ fun View.enableView(enable: Boolean) {
     alpha = if (enable) 1.0f else 0.5f
 }
 
+fun View.showView(show: Boolean) {
+    visibility = if (show) {
+        View.VISIBLE
+    } else {
+        View.GONE
+    }
+}
+
 fun View.showSnackBar(messageResId: Int, shortDuration: Boolean = true) {
     val duration = if (shortDuration) Snackbar.LENGTH_SHORT else Snackbar.LENGTH_LONG
     Snackbar.make(this, messageResId, duration).show()

@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:visibility="@{code.used &lt; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
+            android:visibility="@{code.used &amp;&amp; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/most_recent_code_info_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/most_recent_code_info_textView"
