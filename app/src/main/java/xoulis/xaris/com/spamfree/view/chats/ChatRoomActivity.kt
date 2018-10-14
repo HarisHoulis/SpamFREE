@@ -10,8 +10,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import kotlinx.android.synthetic.main.activity_chat_room.*
@@ -28,12 +30,16 @@ import java.lang.Exception
 
 class ChatRoomActivity : AppCompatActivity() {
 
+    private var sentMessagesCount: Int = 0
+    private var chatMessagesLimit: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
         val args = intent.extras
         args?.getParcelable<Chat>(CHAT_EXTRA)?.let {
+            chatMessagesLimit = it.messages.toInt()
             val chatId = it.codeId
             val receiverName = if (it.ownerId == uid()) it.memberName else it.ownerName
             val senderImage = if (it.ownerId == uid()) it.ownerImage else it.memberImage
@@ -95,7 +101,7 @@ class ChatRoomActivity : AppCompatActivity() {
                                 ListItemReceivedMessageBinding.inflate(inflater, p0, false)
                             ReceivedMessagesViewHolder(itemBinding)
                         }
-                        else -> throw Exception("Wrong item view type!")
+                        else -> throw Exception("Wrong message item view type!")
                     }
                 }
 
@@ -109,6 +115,21 @@ class ChatRoomActivity : AppCompatActivity() {
                         VIEW_TYPE_MESSAGE_RECEIVED -> (holder as ReceivedMessagesViewHolder).bind(
                             model
                         )
+                    }
+                }
+
+                override fun onChildChanged(
+                    type: ChangeEventType,
+                    snapshot: DataSnapshot,
+                    newIndex: Int,
+                    oldIndex: Int
+                ) {
+                    super.onChildChanged(type, snapshot, newIndex, oldIndex)
+                    if (type == ChangeEventType.ADDED) {
+                        val message = snapshot.getValue(ChatMessage::class.java)!!
+                        if (message.senderId == uid()) {
+                            sentMessagesCount++
+                        }
                     }
                 }
             }
@@ -176,6 +197,9 @@ class ChatRoomActivity : AppCompatActivity() {
         RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(chatMessage: ChatMessage) {
+            if (sentMessagesCount == chatMessagesLimit) {
+                chat_room_editText.isEnabled = false
+            }
             itemBinding.chatMessage = chatMessage
             itemBinding.executePendingBindings()
         }
@@ -189,7 +213,6 @@ class ChatRoomActivity : AppCompatActivity() {
             itemBinding.chatMessage = chatMessage
             itemBinding.executePendingBindings()
         }
-
     }
 
     private companion object {

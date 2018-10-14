@@ -42,9 +42,8 @@ class SplashActivity : AppCompatActivity() {
 
         createNotificationChannel()
 
-        val auth = FirebaseAuth.getInstance()
-
-        if (auth.currentUser != null) {
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
             showMainActivity()
         } else {
             signInUser()

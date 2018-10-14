@@ -13,9 +13,9 @@ const val CHILD_UNCHECKED_OUTGOING_REQUESTS = "unchecked_outgoing_requests"
 val uid = { FirebaseAuth.getInstance().uid!! }
 val userDisplayName = { FirebaseAuth.getInstance().currentUser!!.displayName!! }
 
-val codesDbRef = FirebaseDatabase.getInstance().reference.child(CHILD_CODES)
 val userDbRef = { FirebaseDatabase.getInstance().reference.child(CHILD_USERS).child(uid()) }
-val userCodesDbRef = { userDbRef().child(CHILD_CODES) }
+val userCodesDbRef = { FirebaseDatabase.getInstance().reference.child(CHILD_CODES).child(uid()) }
+
 val incomingRequestsRef =
     { FirebaseDatabase.getInstance().reference.child(CHILD_INCOMING_REQUESTS).child(uid()) }
 val outgoingRequestsRef =

@@ -30,19 +30,19 @@ import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import kotlinx.android.synthetic.main.fragment_codes.*
-import kotlinx.android.synthetic.main.list_item_code.*
+import kotlinx.android.synthetic.main.list_item_secondary_code.*
 import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.R
 
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
-import xoulis.xaris.com.spamfree.databinding.ListItemCodeBinding
+import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
+import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
 import xoulis.xaris.com.spamfree.util.CustomDialogHelper
+import java.lang.Exception
 
 class CodesFragment : Fragment() {
 
@@ -59,17 +59,78 @@ class CodesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //setupUsedCodesRecyclerView()
-        //fetchUnusedCode()
-
-        //setCodeLongClickListener()
-        //setUnusedCodeMessagesClickListener()
+        fetchUserCodes()
     }
 
-    private fun setCodeLongClickListener() {
-        binding.unusedCodeTextVew.setOnLongClickListener {
-            binding.unusedCodeTextVew.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            val codeId = binding.code?.id
+    private fun fetchUserCodes() {
+        val query = userCodesDbRef().orderByChild("timestamp")
+        val options =
+            FirebaseRecyclerOptions.Builder<ClientCode>()
+                .setLifecycleOwner(this)
+                .setQuery(query, ClientCode::class.java)
+                .build()
+
+        val adapter =
+            object : FirebaseRecyclerAdapter<ClientCode, RecyclerView.ViewHolder>(options) {
+
+                override fun getItemViewType(position: Int): Int {
+                    return if (position == 0) {
+                        MOST_RECENT_CODE_VIEW_TYPE
+                    } else {
+                        SECONDARY_CODE_VIEW_TYPE
+                    }
+                }
+
+                override fun onCreateViewHolder(
+                    p0: ViewGroup,
+                    viewType: Int
+                ): RecyclerView.ViewHolder {
+                    val inflater = LayoutInflater.from(p0.context)
+                    return when (viewType) {
+                        MOST_RECENT_CODE_VIEW_TYPE -> {
+                            val itemBinding =
+                                ListItemMostRecentCodeBinding.inflate(inflater, p0, false)
+                            MostRecentCodeViewHolder(itemBinding)
+                        }
+                        SECONDARY_CODE_VIEW_TYPE -> {
+                            val itemBinding =
+                                ListItemSecondaryCodeBinding.inflate(inflater, p0, false)
+                            SecondaryCodesViewHolder(itemBinding)
+                        }
+                        else -> throw Exception("Wrong code item view type!")
+                    }
+                }
+
+                override fun onBindViewHolder(
+                    holder: RecyclerView.ViewHolder,
+                    position: Int,
+                    model: ClientCode
+                ) {
+                    when (holder.itemViewType) {
+                        MOST_RECENT_CODE_VIEW_TYPE -> (holder as MostRecentCodeViewHolder).bind(
+                            model
+                        )
+                        SECONDARY_CODE_VIEW_TYPE -> (holder as SecondaryCodesViewHolder).bind(
+                            model,
+                            position
+                        )
+                    }
+                }
+            }
+
+        val recyclerView = binding.codesRecyclerView
+        recyclerView.setHasFixedSize(true)
+        recyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val divider = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
+        divider.setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
+        recyclerView.addItemDecoration(divider)
+        recyclerView.adapter = adapter
+    }
+
+    private fun View.setLongClickListener(codeId: String) {
+        setOnLongClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
             val shareIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_code_subject))
@@ -81,7 +142,7 @@ class CodesFragment : Fragment() {
         }
     }
 
-    private fun setUnusedCodeMessagesClickListener() {
+    private fun View.setChangeMessagesLimitListener() {
         val listener = View.OnClickListener {
             val code = binding.code!!
             val title = "Number of messages"
@@ -94,111 +155,42 @@ class CodesFragment : Fragment() {
             }
             dialog.show()
         }
-        binding.unusedCodeMessagesGroup.setAllOnClickListeners(listener)
+        setOnClickListener(listener)
     }
 
     private fun updateCodeMessages(codeId: String, messages: String) {
-        val query = userCodesDbRef().orderByChild("id").equalTo(codeId)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError) {}
-
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (child in snapshot.children) {
-                    val childKey = child.key!!
-                    snapshot.ref.child(childKey).child("messages").setValue(messages)
-                }
-            }
-        })
+        userCodesDbRef().child("$codeId/messages").setValue(messages)
+        FirebaseDatabase.getInstance().getReference("/codes/$codeId/messages")
+            .setValue(messages)
     }
 
-    private fun fetchUnusedCode() {
-        val query = userCodesDbRef().orderByChild("used").equalTo(false).limitToFirst(1)
-        query.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (!snapshot.hasChildren()) {
-                    return
-                }
+    inner class MostRecentCodeViewHolder(private val itemBinding: ListItemMostRecentCodeBinding) :
+        RecyclerView.ViewHolder(itemBinding.root) {
 
-                for (child in snapshot.children) {
-                    val childKey = child.key
-                    childKey?.let {
-                        val clientCode = snapshot.child(it).getValue(ClientCode::class.java)
-                        binding.code = clientCode
-                    }
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
-    }
-
-    private fun setupUsedCodesRecyclerView() {
-        binding.showShimmer = true
-        binding.shimmerViewContainer.startShimmer()
-
-        val query = userCodesDbRef().orderByChild("used").equalTo(true).limitToFirst(10)
-        val options =
-            FirebaseRecyclerOptions.Builder<ClientCode>()
-                .setLifecycleOwner(this)
-                .setQuery(query, ClientCode::class.java)
-                .build()
-
-        val adapter = object : FirebaseRecyclerAdapter<ClientCode, CodesViewHolder>(options) {
-            override fun onCreateViewHolder(
-                parent: ViewGroup,
-                viewType: Int
-            ): CodesViewHolder {
-                val inflater = LayoutInflater.from(parent.context)
-                val itemBinding = ListItemCodeBinding.inflate(inflater, parent, false)
-                return CodesViewHolder(itemBinding)
-            }
-
-            override fun onBindViewHolder(
-                holder: CodesViewHolder,
-                position: Int,
-                model: ClientCode
-            ) {
-                holder.bind(model, position)
-            }
-
-            override fun onDataChanged() {
-                super.onDataChanged()
-                hideLoadingAndEmptyViews(itemCount)
-            }
-
-            override fun onError(error: DatabaseError) {
-                super.onError(error)
-                hideLoadingAndEmptyViews(itemCount)
-            }
+        fun bind(code: ClientCode) {
+            itemBinding.code = code
+            itemBinding.root.setLongClickListener(code.id)
+            itemBinding.mostRecentCodeEditMessagesImageView.setChangeMessagesLimitListener()
+            itemBinding.executePendingBindings()
         }
-
-        val recyclerView = binding.usedCodesRecyclerView
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val divider = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        divider.setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
-        recyclerView.addItemDecoration(divider)
-        recyclerView.adapter = adapter
-
     }
 
-    private fun hideLoadingAndEmptyViews(itemCount: Int) {
-        binding.showShimmer = false
-        binding.shimmerViewContainer.stopShimmer()
-        binding.showEmptyView = itemCount == 0
-        binding.executePendingBindings()
-    }
-
-    inner class CodesViewHolder(private val itemBinding: ListItemCodeBinding) :
+    inner class SecondaryCodesViewHolder(private val itemBinding: ListItemSecondaryCodeBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(code: ClientCode, position: Int) {
-            itemBinding.number = position + 1
+            itemBinding.index = position + 1
             itemBinding.code = code
+            if (!code.used) {
+                itemBinding.root.setLongClickListener(code.id)
+                itemBinding.secondaryCodeEditMessagesImageView.setChangeMessagesLimitListener()
+            }
             itemBinding.executePendingBindings()
         }
+    }
+
+    private companion object {
+        const val MOST_RECENT_CODE_VIEW_TYPE = 0
+        const val SECONDARY_CODE_VIEW_TYPE = 1
     }
 }
