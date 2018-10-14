@@ -4,21 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.support.v7.app.AppCompatActivity
-
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
-import android.support.v4.view.ViewPager
-import android.util.Log
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.firebase.ui.auth.AuthUI
-import com.google.firebase.auth.FirebaseAuth
-
 import kotlinx.android.synthetic.main.activity_main.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.view.chats.ChatsFragment

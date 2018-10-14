@@ -2,10 +2,10 @@ package xoulis.xaris.com.spamfree.binding
 
 import android.databinding.BindingAdapter
 import android.text.TextUtils
-import android.widget.ImageView
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
+import xoulis.xaris.com.spamfree.CHAT_TIMESTAMP_FORMAT
 import xoulis.xaris.com.spamfree.MESSAGE_TIMESTAMP_FORMAT
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
@@ -32,6 +32,17 @@ fun setRequestDisplayName(view: TextView, request: ChatRequest) {
         "To: ${request.receiverName}"
     }
     view.text = name
+}
+
+@BindingAdapter("requestTimestamp")
+fun setRequestTimestamp(view: TextView, timestamp: Long) {
+    val sdf by lazy {
+        SimpleDateFormat(CHAT_TIMESTAMP_FORMAT, Locale.getDefault())
+    }
+    val date = Date(timestamp)
+    val formattedTime = sdf.format(date)
+    val text = "${view.context.getText(R.string.at)} $formattedTime"
+    view.text = text
 }
 
 @BindingAdapter("messageTimestamp")

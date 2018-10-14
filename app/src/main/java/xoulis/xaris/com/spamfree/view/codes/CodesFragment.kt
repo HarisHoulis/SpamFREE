@@ -1,51 +1,30 @@
 package xoulis.xaris.com.spamfree.view.codes
 
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
-import android.graphics.Color
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.text.Editable
-import android.text.InputType
-import android.text.TextWatcher
-import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.firebase.ui.database.SnapshotParser
-import com.google.firebase.database.*
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.functions.FirebaseFunctions
-import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
-import kotlinx.android.synthetic.main.fragment_chats.*
 import kotlinx.android.synthetic.main.fragment_codes.*
-import kotlinx.android.synthetic.main.list_item_secondary_code.*
-import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.R
-import xoulis.xaris.com.spamfree.data.vo.Chat
-
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
-import xoulis.xaris.com.spamfree.util.CustomDialogHelper
-import java.lang.Exception
+import xoulis.xaris.com.spamfree.getDialog
+import xoulis.xaris.com.spamfree.showSnackBar
+import xoulis.xaris.com.spamfree.userCodesDbRef
 
 class CodesFragment : Fragment() {
 

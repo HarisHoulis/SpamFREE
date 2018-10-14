@@ -6,21 +6,14 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import android.widget.*
+import android.support.v7.app.AppCompatActivity
 import com.google.firebase.storage.FirebaseStorage
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.ActivitySettingsBinding
-import xoulis.xaris.com.spamfree.util.CustomDialogHelper
 
 
 class SettingsActivity : AppCompatActivity() {

@@ -22,14 +22,26 @@
     <string name="tab_requests">Requests</string>
     <string name="tab_chats">Chats</string>
     <string name="tab_codes">Codes</string>
+    <string name="accept_caps">ACCEPT</string>
+    <string name="decline_caps">DECLINE</string>
+    <string name="used">used</string>
+    <string name="at">At:</string>
 
     <string name="action_settings">Account Settings</string>
     <string name="action_logout">Log Out</string>
+
+    <!-- RequestsFragment -->
+    <string name="incoming_requests">Incoming Requests</string>
+    <string name="empty_incoming_requests">You have no incoming requests yet.</string>
+    <string name="outgoing_requests">Sent Requests</string>
+    <string name="empty_outgoing_requests">You haven\'t sent any requests yet.</string>
 
     <!-- Settings Activity-->
     <string name="new_status">New Status</string>
     <string name="user_default_status">Hi there, I am using SpamFree</string>
     <string name="default_user_image_name">default</string>
+    <string name="change_image">Change Image</string>
+    <string name="change_status">Change Status</string>
 
     <!-- Request Response Message -->
     <string name="inexistent_code">This code doesn\'t exist! Try again.</string>
