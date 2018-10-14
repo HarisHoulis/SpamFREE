@@ -6,6 +6,7 @@ import com.google.firebase.database.ServerValue
 data class ChatMessage(
     val chatId: String = "",
     val senderId: String = "",
+    val senderName: String = "",
     val senderImage: String = "",
     val message: String = "",
     val timestamp: Any = ServerValue.TIMESTAMP

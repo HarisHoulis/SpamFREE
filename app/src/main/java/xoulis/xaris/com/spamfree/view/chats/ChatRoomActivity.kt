@@ -39,9 +39,10 @@ class ChatRoomActivity : AppCompatActivity() {
             val chatId = it.codeId
             val receiverName = if (it.ownerId == uid()) it.memberName else it.ownerName
             val senderImage = if (it.ownerId == uid()) it.ownerImage else it.memberImage
+            val senderName = if (it.ownerId == uid()) it.ownerName else it.memberName
             initToolbar(receiverName)
             setupMessagesRecyclerView(chatId)
-            setupBottomToolbar(chatId, senderImage)
+            setupBottomToolbar(chatId, senderName, senderImage)
         }
     }
 
@@ -151,7 +152,7 @@ class ChatRoomActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-    private fun setupBottomToolbar(chatId: String, senderImage: String) {
+    private fun setupBottomToolbar(chatId: String, senderName: String, senderImage: String) {
         chat_room_editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
@@ -166,17 +167,18 @@ class ChatRoomActivity : AppCompatActivity() {
         chat_room_send_button.enableView(currentText.toString().trim().isNotEmpty())
 
         chat_room_send_button.setOnClickListener {
-            sendMessage(chatId, senderImage)
+            sendMessage(chatId,senderName, senderImage)
         }
     }
 
-    private fun sendMessage(chatId: String, senderImage: String) {
+    private fun sendMessage(chatId: String, senderName: String, senderImage: String) {
         val db = FirebaseDatabase.getInstance()
         val messageBody = chat_room_editText.text.toString().trim()
         val timestamp = ServerValue.TIMESTAMP
         val message = ChatMessage(
             chatId,
             uid(),
+            senderName,
             senderImage,
             messageBody,
             timestamp

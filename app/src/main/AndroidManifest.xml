@@ -26,6 +26,11 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
         <!-- [ND fcm id auto-init] -->
+        <!-- [START fcm_default_icon] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_default_avatar" />
+        <!-- [END fcm_default_icon] -->
         <!-- [START fcm_default_channel] -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
