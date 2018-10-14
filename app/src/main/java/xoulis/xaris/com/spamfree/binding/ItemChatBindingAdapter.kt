@@ -14,9 +14,9 @@ import java.util.*
 @BindingAdapter("chatImage")
 fun setChatImage(view: CircleImageView, chat: Chat) {
     val imageUrl = if (chat.ownerId === uid()) {
-        chat.ownerImage
-    } else {
         chat.memberImage
+    } else {
+        chat.ownerImage
     }
 
     Picasso.get()
@@ -27,12 +27,11 @@ fun setChatImage(view: CircleImageView, chat: Chat) {
 
 @BindingAdapter("chatUsername")
 fun setChatUsername(view: TextView, chat: Chat) {
-    val username = if (chat.ownerId === uid()) {
-        chat.ownerName
-    } else {
+    val username = if (chat.ownerId == uid()) {
         chat.memberName
+    } else {
+        chat.ownerName
     }
-
     view.text = username
 }
 

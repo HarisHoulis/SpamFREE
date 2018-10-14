@@ -139,7 +139,7 @@ class ChatsFragment : Fragment() {
     }
 
     private fun okButtonClicked(codeId: String) {
-        if (context!!.isNetworkAvailable()) {
+        if (!context!!.isNetworkAvailable()) {
             newRequestDialog.dismiss()
             fragment_chats_root.showSnackBar(R.string.detailed_error)
         } else {

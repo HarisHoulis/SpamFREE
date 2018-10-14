@@ -14,9 +14,11 @@ import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_chat_room.*
 import xoulis.xaris.com.spamfree.CHAT_EXTRA
 import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.binding.setChatImage
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatMessage
 import xoulis.xaris.com.spamfree.databinding.ListItemReceivedMessageBinding
@@ -40,19 +42,20 @@ class ChatRoomActivity : AppCompatActivity() {
             val receiverName = if (it.ownerId == uid()) it.memberName else it.ownerName
             val senderImage = if (it.ownerId == uid()) it.ownerImage else it.memberImage
             val senderName = if (it.ownerId == uid()) it.ownerName else it.memberName
-            initToolbar(receiverName)
+            initToolbar(receiverName, it)
             setupMessagesRecyclerView(chatId)
             setupBottomToolbar(chatId, senderName, senderImage)
         }
     }
 
-    private fun initToolbar(title: String) {
+    private fun initToolbar(title: String, chat: Chat) {
         setSupportActionBar(chat_room_toolbar)
         supportActionBar?.let {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
             it.title = title
         }
+        setChatImage(chat_room_profile_image, chat)
     }
 
     private fun setupMessagesRecyclerView(chatId: String) {
