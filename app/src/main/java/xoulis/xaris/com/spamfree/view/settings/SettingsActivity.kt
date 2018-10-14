@@ -87,12 +87,9 @@ class SettingsActivity : AppCompatActivity() {
         // Call server function
         val data = hashMapOf("imageUrl" to imageUrl)
         FirebaseFunctions
-            .getInstance()
+            .getInstance("europe-west1")
             .getHttpsCallable("updateUserImageInChats")
-            .call()
-            .addOnCompleteListener{task ->
-                Log.i("sdsdsd", task.exception.toString())
-            }
+            .call(data)
     }
 
     fun onStatusChangeClick(user: User) {

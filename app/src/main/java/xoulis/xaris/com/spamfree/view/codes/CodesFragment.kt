@@ -121,7 +121,7 @@ class CodesFragment : Fragment() {
 
     private fun requestNewCode() {
         showLoading(true)
-        val functions = FirebaseFunctions.getInstance()
+        val functions = FirebaseFunctions.getInstance("europe-west1")
         functions.getHttpsCallable("requestNewCode")
             .call()
             .addOnCompleteListener { task ->
