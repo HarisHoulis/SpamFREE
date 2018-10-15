@@ -19,6 +19,14 @@ With **SpamFREE** you can:
 Screenshots
 ---
 
+External Services used
+---
+* [Firebase Cloud Functions](https://firebase.google.com/docs/functions/)
+* [Firebase Realtime Database](https://firebase.google.com/docs/database/)
+* [Firebase Cloud Storage](https://firebase.google.com/docs/storage/)
+* [Firebase Authentication](https://firebase.google.com/docs/auth/)
+* [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/)
+
 Libraries used
 ---
 * [DataBinding](https://developer.android.com/topic/libraries/data-binding/)
