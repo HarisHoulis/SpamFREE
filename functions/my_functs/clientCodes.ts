@@ -1,6 +1,5 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-admin.initializeApp();
 
 class Code {
     public id: string;
@@ -43,7 +42,7 @@ const assignCodeToUser = async function (uid: string) {
 }
 
 /* HTTP function called from the client (Android app), in order to assign new code to a user */
-exports.requestNewCode = functions.region('europe-west1').https.onCall((data, context) => {
+const requestNewCode = functions.region('europe-west1').https.onCall((data, context) => {
     if (!context.auth) {
         throw new functions.https.HttpsError('failed-precondition', 'The function must be called ' +
             'while authenticated.');
@@ -59,7 +58,7 @@ exports.requestNewCode = functions.region('europe-west1').https.onCall((data, co
 /* Assign code to newly created user.
 *  TRIGGERED when a new user is added to /users.
 */
-export const assignCodeToNewUser = functions.region('europe-west1')
+const assignCodeToNewUser = functions
     .database.ref('/users/{uid}')
     .onCreate(async (_, context) => {
         const uid = context.params.uid;
@@ -69,7 +68,7 @@ export const assignCodeToNewUser = functions.region('europe-west1')
 /* Assign new code to existing user
 *  TRIGGERED when a user's code is marked 'used = true'
 */
-export const assignCodeToExistingUser = functions.region('europe-west1')
+const assignCodeToExistingUser = functions
     .database.ref('/client_codes/{uid}/{codeId}')
     .onUpdate(async (change, context) => {
         const before = change.before.val();
@@ -85,3 +84,9 @@ export const assignCodeToExistingUser = functions.region('europe-west1')
         }
         return null;
     });
+
+module.exports = {
+    assignCodeToNewUser,
+    assignCodeToExistingUser,
+    requestNewCode
+}
