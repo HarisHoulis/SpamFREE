@@ -23,8 +23,8 @@ class RequestsFragment : Fragment() {
     private lateinit var incomingReqAdapter: FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_requests, container, false)
     }
@@ -39,20 +39,20 @@ class RequestsFragment : Fragment() {
     fun onAcceptRequestClick(pos: Int, request: ChatRequest) {
         val itemRef = incomingReqAdapter.getRef(pos)
         itemRef.child("status")
-            .setValue(RequestStatus.ACCEPTED)
-            .addOnSuccessListener {
-                itemRef.removeValue()
-            }
+                .setValue(RequestStatus.ACCEPTED)
+                .addOnSuccessListener {
+                    itemRef.removeValue()
+                }
         createNewChat(request)
     }
 
     fun onRejectRequestClick(pos: Int) {
         val itemRef = incomingReqAdapter.getRef(pos)
         itemRef.child("status")
-            .setValue(RequestStatus.REJECTED)
-            .addOnSuccessListener {
-                itemRef.removeValue()
-            }
+                .setValue(RequestStatus.REJECTED)
+                .addOnSuccessListener {
+                    itemRef.removeValue()
+                }
     }
 
     private fun createNewChat(request: ChatRequest) {
@@ -62,6 +62,7 @@ class RequestsFragment : Fragment() {
         val ownerImage = request.receiverImage
         val ownerName = request.receiverName
         val memberImage = request.senderImage
+        val memberName = request.senderName
         val messagesLimit = request.messages
         val db = FirebaseDatabase.getInstance()
 
@@ -75,36 +76,36 @@ class RequestsFragment : Fragment() {
 
         // Create new chat
         db.getReference("/chats/$codeId").setValue(
-            Chat(
-                codeId,
-                ownerId,
-                ownerImage,
-                memberImage,
-                ownerName,
-                userDisplayName(),
-                messages = messagesLimit
-            )
+                Chat(
+                        codeId,
+                        ownerId,
+                        ownerImage,
+                        memberImage,
+                        ownerName,
+                        memberName,
+                        messages = messagesLimit
+                )
         )
     }
 
     private fun setupIncomingRequestsRecyclerView() {
         val options = FirebaseRecyclerOptions.Builder<ChatRequest>()
-            .setLifecycleOwner(this)
-            .setQuery(incomingRequestsRef(), ChatRequest::class.java)
-            .build()
+                .setLifecycleOwner(this)
+                .setQuery(incomingRequestsRef(), ChatRequest::class.java)
+                .build()
         incomingReqAdapter =
                 object : FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>(options) {
                     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RequestsViewHolder {
                         val inflater = LayoutInflater.from(p0.context)
                         val itemBinding =
-                            ListItemRequestBinding.inflate(inflater, p0, false)
+                                ListItemRequestBinding.inflate(inflater, p0, false)
                         return RequestsViewHolder(itemBinding)
                     }
 
                     override fun onBindViewHolder(
-                        holder: RequestsViewHolder,
-                        position: Int,
-                        model: ChatRequest
+                            holder: RequestsViewHolder,
+                            position: Int,
+                            model: ChatRequest
                     ) {
                         holder.bind(model)
                     }
@@ -122,21 +123,21 @@ class RequestsFragment : Fragment() {
 
     private fun setupSentRequestsRecyclerView() {
         val options = FirebaseRecyclerOptions.Builder<ChatRequest>()
-            .setLifecycleOwner(this)
-            .setQuery(outgoingRequestsRef(), ChatRequest::class.java)
-            .build()
+                .setLifecycleOwner(this)
+                .setQuery(outgoingRequestsRef(), ChatRequest::class.java)
+                .build()
         val adapter = object : FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>(options) {
             override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RequestsViewHolder {
                 val inflater = LayoutInflater.from(p0.context)
                 val itemBinding =
-                    ListItemRequestBinding.inflate(inflater, p0, false)
+                        ListItemRequestBinding.inflate(inflater, p0, false)
                 return RequestsViewHolder(itemBinding)
             }
 
             override fun onBindViewHolder(
-                holder: RequestsViewHolder,
-                position: Int,
-                model: ChatRequest
+                    holder: RequestsViewHolder,
+                    position: Int,
+                    model: ChatRequest
             ) {
                 holder.bind(model)
             }
@@ -152,7 +153,7 @@ class RequestsFragment : Fragment() {
     }
 
     inner class RequestsViewHolder(private val itemBinding: ListItemRequestBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+            RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(request: ChatRequest) {
             itemBinding.request = request

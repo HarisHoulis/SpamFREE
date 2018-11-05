@@ -55,7 +55,7 @@ class ChatsFragment : Fragment() {
         setListeners()
         fetchChats()
 
-        new_chat_fab.setOnClickListener { _ ->
+        new_chat_fab.setOnClickListener {
             showNewRequestDialog()
         }
     }

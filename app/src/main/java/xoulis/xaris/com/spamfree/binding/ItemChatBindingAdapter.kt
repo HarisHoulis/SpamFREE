@@ -13,7 +13,7 @@ import java.util.*
 
 @BindingAdapter("chatImage")
 fun setChatImage(view: CircleImageView, chat: Chat) {
-    val imageUrl = if (chat.ownerId === uid()) {
+    val imageUrl = if (chat.ownerId == uid()) {
         chat.memberImage
     } else {
         chat.ownerImage

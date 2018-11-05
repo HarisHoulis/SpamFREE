@@ -135,6 +135,11 @@ class ChatRoomActivity : AppCompatActivity() {
                             }
                         }
                     }
+
+                    override fun onDataChanged() {
+                        super.onDataChanged()
+                        chat_message_day_textView.showView(itemCount != 0)
+                    }
                 }
 
         // Scroll to the bottom every time a new message is added,
@@ -160,7 +165,7 @@ class ChatRoomActivity : AppCompatActivity() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val pos = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+                val pos = linearLayoutManager.findFirstVisibleItemPosition()
                 val firstVisibleMessageTimestamp = adapter.getItem(pos).getTimestampLong()
                 chat_message_day_textView.text = sdf.format(Date(firstVisibleMessageTimestamp))
             }
