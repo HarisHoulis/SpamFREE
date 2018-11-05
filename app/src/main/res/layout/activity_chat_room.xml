@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
     android:background="@color/colorPrimaryLight"
+    android:focusableInTouchMode="true"
     tools:context=".view.chats.ChatRoomActivity">
 
     <FrameLayout
@@ -47,9 +47,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:visibility="gone"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_add" />
+            android:src="@drawable/ic_add"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/chat_room_editText"
@@ -68,6 +68,20 @@
             android:src="@drawable/ic_send" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/chat_message_day_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/message_date_background"
+        android:padding="4dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_fl"
+        tools:text="21/10/2018" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messages_recyclerView"

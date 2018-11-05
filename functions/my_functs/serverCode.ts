@@ -19,7 +19,7 @@ const MINIMUM_NUMBER_OF_UNUSED_CODES = 10;
 const NUMBER_OF_CODES_TO_ADD = 50;
 
 /* Helper method to populate the DB with codes. */
-const addCodesToDB = function (numOfCodes: number) {
+const addCodesToDB = function (numOfCodes: number): Promise<void> {
     const lowerBound = 10000;
     const upperBound = 99999;
 
@@ -35,7 +35,7 @@ const addCodesToDB = function (numOfCodes: number) {
         }
         ts++;
     }
-    admin.database().ref('/codes').update(codesMap);
+    return admin.database().ref('/codes').update(codesMap);
 };
 
 const checkIfNewCodesAreNeeded = functions.database.ref('/codes/{codeId}/used')
@@ -51,8 +51,9 @@ const checkIfNewCodesAreNeeded = functions.database.ref('/codes/{codeId}/used')
             admin.database().ref('/codes').orderByChild('value').equalTo(false).once('value')
                 .then(snapshot => {
                     if (!snapshot.exists() || snapshot.numChildren() < MINIMUM_NUMBER_OF_UNUSED_CODES) {
-                        addCodesToDB(NUMBER_OF_CODES_TO_ADD);
+                        return addCodesToDB(NUMBER_OF_CODES_TO_ADD);
                     }
+                    return null;
                 })
         }
     });

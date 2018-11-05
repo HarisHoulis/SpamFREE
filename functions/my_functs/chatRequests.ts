@@ -212,19 +212,21 @@ const handleRequestStatusChange = functions
     .database.ref('/incoming_requests/{uid}/{rid}')
     .onDelete(async (snapshot) => {
         try {
-            const request = snapshot.val();
+            const request: ChatRequest = snapshot.val();
             const codeId = request.codeId;
             const senderId = request.senderId;
+            const statusString = request.status.toString();
 
-            if (request.status === 'ACCEPTED') {
+            if (statusString === RequestStatus[RequestStatus.ACCEPTED]) {
+                console.log(senderId);
                 // Remove request from /outgoing_requests
-                const removeOutgoingReq = admin.database().ref(`/outgoing_req/${senderId}/${codeId}`).remove();
+                const removeOutgoingReq = admin.database().ref(`/outgoing_requests/${senderId}/${codeId}`).remove();
 
                 // Set code's property 'used' to true
                 const setCodeUsed = admin.database().ref(`/codes/${codeId}/used`).set(true);
                 const setClientCodeUsed = admin.database().ref(`/client_codes/${request.receiverId}/${codeId}/used`).set(true)
                 return Promise.all([removeOutgoingReq, setCodeUsed, setClientCodeUsed]);
-            } else if (request.status === 'REJECTED') {
+            } else if (statusString === RequestStatus[RequestStatus.REJECTED]) {
                 // Revert hasActiveRequest property of code
                 const hasActiveReqPromise = admin.database().ref(`/codes/${codeId}/hasActiveRequest`).set(false);
 

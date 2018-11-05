@@ -7,6 +7,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'key0'
+            keyPassword 'dfJE)*H#H830f0)*H#)*H#)F0#F3f334dasfFSAFaasfQ#$#$'
+            storeFile file("$rootDir/spamFreeKeystore.jks")
+            storePassword 'akn#*Ry(FHBu#HF$Y#($^(houoSHF083ru80'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "xoulis.xaris.com.spamfree"
@@ -21,6 +29,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
     dataBinding {

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SpamFree.iml" filepath="$PROJECT_DIR$/SpamFree.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SpamFREE.iml" filepath="$PROJECT_DIR$/SpamFREE.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
