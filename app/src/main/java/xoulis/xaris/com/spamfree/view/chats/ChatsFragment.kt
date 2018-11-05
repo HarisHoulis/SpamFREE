@@ -157,7 +157,7 @@ class ChatsFragment : Fragment() {
         FirebaseInstanceId.getInstance()
             .instanceId
             .addOnCompleteListener { task ->
-                val token = task.result.token
+                val token = task.result!!.token
                 val request = ChatRequest(
                     codeId = codeId,
                     senderToken = token

@@ -9,6 +9,5 @@
     <color name="textColorPrimary">#212121</color>
     <color name="textColorSecondary">#757575</color>
 
-    <!-- Shimmer -->
-    <color name="background">#dddddd</color>
+    <color name="messageDateBgColor">#33455A64</color>
 </resources>
