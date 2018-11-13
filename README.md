@@ -18,7 +18,7 @@ With **SpamFREE** you can:
 
 Screenshots
 ---
-![](screenshots/sc1.png) ![](screenshots/sc2.png) ![](screenshots/sc3.png) ![](screenshots/sc4.png)
+![](screenshots/s1.png) ![](screenshots/s2.png) ![](screenshots/s3.png) ![](screenshots/s4.png)
 
 External Services used
 ---
