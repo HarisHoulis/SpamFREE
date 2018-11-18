@@ -33,7 +33,6 @@ class SettingsActivity : AppCompatActivity() {
         val viewModel = ViewModelProviders.of(this).get(SettingsViewModel::class.java)
         viewModel.userLiveData.observe(this, Observer {
             it?.run {
-                val s = getValue(User::class.java)
                 binding.user = getValue(User::class.java)
                 binding.isLoading = false
             }

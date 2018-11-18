@@ -39,23 +39,26 @@ const addCodesToDB = function (numOfCodes: number): Promise<void> {
 };
 
 const checkIfNewCodesAreNeeded = functions.database.ref('/codes/{codeId}/used')
-    .onUpdate((change, context) => {
+    .onUpdate((change, _) => {
         const before: boolean = change.before.val();
         const after: boolean = change.after.val();
 
-        if (before === after) {
+        if (before === after || after === false) {
             return null;
         }
 
-        if (after === true) {
-            admin.database().ref('/codes').orderByChild('value').equalTo(false).once('value')
-                .then(snapshot => {
-                    if (!snapshot.exists() || snapshot.numChildren() < MINIMUM_NUMBER_OF_UNUSED_CODES) {
-                        return addCodesToDB(NUMBER_OF_CODES_TO_ADD);
-                    }
-                    return null;
-                })
-        }
+        return admin.database().ref('/codes').orderByChild('used').equalTo(false).once('value')
+            .then(snapshot => {
+                console.log(snapshot.numChildren());
+                if (!snapshot.exists() || snapshot.numChildren() < MINIMUM_NUMBER_OF_UNUSED_CODES) {
+                    return addCodesToDB(NUMBER_OF_CODES_TO_ADD);
+                }
+                return null;
+            })
+            .catch(err => {
+                console.log(err);
+                return null;
+            })
     });
 
 module.exports = {
