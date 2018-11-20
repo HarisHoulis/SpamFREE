@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.InputType
 import android.util.Log
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
@@ -118,15 +119,17 @@ class CodesFragment : Fragment() {
         val divider = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
         divider.setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
         recyclerView.addItemDecoration(divider)
+        recyclerView.itemAnimator = null // Set itemAnimator = null, in order to keep the alpha of items
         recyclerView.adapter = codesAdapter
     }
 
     private fun requestNewCode() {
-        showLoading(false)
+        showLoading(true)
         val functions = FirebaseFunctions.getInstance("europe-west1")
         functions.getHttpsCallable("requestNewCode")
                 .call()
                 .addOnCompleteListener { task ->
+                    Log.i("sds","sdsd")
                     if (!task.isSuccessful) {
                         fragment_codes_root.showSnackBar(R.string.failed_to_add_new_code)
                     }
@@ -140,7 +143,7 @@ class CodesFragment : Fragment() {
             val shareIntent = Intent().apply {
                 action = Intent.ACTION_SEND
                 putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_code_subject))
-                putExtra(Intent.EXTRA_TEXT, codeId)
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_code_text, codeId))
                 type = "text/plain"
             }
             startActivity(Intent.createChooser(shareIntent, getString(R.string.share_code_title)))
@@ -148,12 +151,11 @@ class CodesFragment : Fragment() {
         }
     }
 
-    private fun View.setChangeMessagesLimitListener() {
+    private fun View.setChangeMessagesLimitListener(code: ClientCode) {
         val listener = View.OnClickListener {
-            val code = binding.code!!
             val title = "Number of messages"
             val text = code.messages
-            val dialog = context!!.getDialog(title, text) {
+            val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
                 setEditTextWatcher()
                 setOkButtonClickListener { userInput ->
                     updateCodeMessages(code.id, userInput)
@@ -170,9 +172,9 @@ class CodesFragment : Fragment() {
                 .setValue(messages)
     }
 
-    private fun showLoading(enable: Boolean) {
-        binding.showLoading = !enable
-        binding.addNewCodeFab.isEnabled = enable
+    private fun showLoading(show: Boolean) {
+        binding.showLoading = show
+        binding.addNewCodeFab.isEnabled = !show
     }
 
     inner class MostRecentCodeViewHolder(private val itemBinding: ListItemMostRecentCodeBinding) :
@@ -180,8 +182,8 @@ class CodesFragment : Fragment() {
 
         fun bind(code: ClientCode) {
             itemBinding.code = code
-            itemBinding.root.setLongClickListener(code.id)
-            itemBinding.mostRecentCodeEditMessagesImageView.setChangeMessagesLimitListener()
+            itemBinding.mostRecentCodeTextVew.setLongClickListener(code.id)
+            itemBinding.mostRecentCodeEditMessagesImageView.setChangeMessagesLimitListener(code)
             itemBinding.executePendingBindings()
         }
     }
@@ -194,7 +196,7 @@ class CodesFragment : Fragment() {
             itemBinding.code = code
             if (!code.used) {
                 itemBinding.root.setLongClickListener(code.id)
-                itemBinding.secondaryCodeEditMessagesImageView.setChangeMessagesLimitListener()
+                itemBinding.secondaryCodeEditMessagesImageView.setChangeMessagesLimitListener(code)
             }
             itemBinding.executePendingBindings()
         }
