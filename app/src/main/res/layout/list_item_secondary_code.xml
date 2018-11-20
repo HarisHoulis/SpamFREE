@@ -20,7 +20,9 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="@{code.used ? 0.5f : 1.0f}"
+        android:focusable="true"
+        android:clickable="true"
+        android:alpha="@{code.used ? 0.6f : 1.0f}"
         android:elevation="4dp">
 
         <TextView
@@ -57,6 +59,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
+            android:visibility="@{code.used ? View.GONE : View.VISIBLE}"
             android:text="@{code.messages + ` messages left`}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/secondary_code_index_textView"

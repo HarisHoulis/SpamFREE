@@ -22,24 +22,27 @@
         android:id="@+id/custom_dialog_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:ems="10"
         android:inputType="text"
         android:maxLength="6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/custom_dialog_title"
-        tools:text="Status" />
+        tools:text="Status">
+
+        <requestFocus />
+    </EditText>
 
     <Button
         android:id="@+id/custom_dialog_ok_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="@android:string/ok"
         android:textColor="@color/colorAccent"
         android:textSize="14sp"
@@ -52,15 +55,15 @@
     <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/custom_dialog_progressBar"
         style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
-        app:mpb_useIntrinsicPadding="false"
         android:layout_width="0dp"
         android:layout_height="4dp"
-        android:visibility="gone"
         android:indeterminate="true"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:mpb_progressStyle="horizontal" />
+        app:mpb_progressStyle="horizontal"
+        app:mpb_useIntrinsicPadding="false" />
 
 </android.support.constraint.ConstraintLayout>
