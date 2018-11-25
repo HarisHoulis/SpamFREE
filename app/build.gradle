@@ -1,0 +1,94 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+    signingConfigs {
+        config {
+            keyAlias 'spamalias'
+            keyPassword 'akn#*Ry(FHBu#HF$Y#($^(houoSHF083ru80'
+            storeFile file('H:/Users/Xaris/AndroidStudioProjects/SpamFREE/spamFreeKeystore.jks')
+            storePassword 'akn#*Ry(FHBu#HF$Y#($^(houoSHF083ru80'
+        }
+    }
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "xoulis.xaris.com.spamfree"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 3
+        versionName "1.2"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        resConfigs "en", "el"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+        }
+    }
+    dataBinding {
+        enabled = true
+    }
+    lintOptions {
+        check 'Interoperability'
+    }
+    androidExtensions {
+        experimental = true
+    }
+    buildToolsVersion '28.0.3'
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //    Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //    Support libraries
+    implementation "com.android.support:support-v4:$support_version"
+    implementation "com.android.support:customtabs:$support_version"
+    implementation "com.android.support:support-v4:$support_version"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation "com.android.support.constraint:constraint-layout:$constraint_verison"
+    implementation "com.android.support:exifinterface:$support_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+
+    //    Architecture Components
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    //    Firebase
+    implementation "com.google.firebase:firebase-core:$firebase_core_version"
+    implementation "com.google.firebase:firebase-auth:$firebase_auth_version"
+    implementation "com.google.firebase:firebase-database:$firebase_db_version"
+    implementation "com.google.firebase:firebase-storage:$firebase_storage_version"
+    implementation "com.google.firebase:firebase-messaging:$firebase_messaging_version"
+    implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_auth_version"
+    implementation "com.firebaseui:firebase-ui-database:$firebase_ui_db_version"
+    implementation "com.google.firebase:firebase-functions:$firebase_functions_version"
+
+    //    Picasso
+    implementation "com.squareup.picasso:picasso:$picasso_version"
+
+    //    ImageView and ImageCropper
+    implementation "de.hdodenhof:circleimageview:$circle_image_view_version"
+    implementation "com.theartofdev.edmodo:android-image-cropper:$image_cropper_version"
+
+    //    Shimmer
+    implementation "com.facebook.shimmer:shimmer:$shimmer_version"
+
+    //    Material Progress Bar
+    implementation "me.zhanghai.android.materialprogressbar:library:$material_progress_bar_version"
+}
+
+apply plugin: 'com.google.gms.google-services'
