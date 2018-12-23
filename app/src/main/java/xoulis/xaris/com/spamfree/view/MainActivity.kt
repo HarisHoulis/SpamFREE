@@ -16,6 +16,7 @@ import android.view.MenuItem
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.util.*
 import xoulis.xaris.com.spamfree.view.chats.ChatsFragment
 import xoulis.xaris.com.spamfree.view.codes.CodesFragment
 import xoulis.xaris.com.spamfree.view.requests.RequestsFragment

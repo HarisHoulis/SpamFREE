@@ -58,9 +58,17 @@ const checkCodeValidity = async function (request: ChatRequest): Promise<[number
         }
 
         // Check if there is an active chat between sender and receiver 
+        const senderActiveChatsSnap = await admin.database().ref(`/active_chats/${senderId}`).once('value');
+        const receiverActiveChatsSnap = await admin.database().ref(`/active_chats/${receiverId}`).once('value');
         let hasActiveChat = false;
-        const userChatsSnapshot = await admin.database().ref(`/user_chats/${senderId}/${codeId}`).once('value');
-        hasActiveChat = userChatsSnapshot.exists();
+        if (senderActiveChatsSnap.exists() && receiverActiveChatsSnap.exists()) {
+            const senderActivChats: string[] = Object.keys(senderActiveChatsSnap.val());
+            const receiverActiveChats: string[] = Object.keys(receiverActiveChatsSnap.val());
+
+            hasActiveChat = senderActivChats.some((v) => {
+                return receiverActiveChats.indexOf(v) >= 0
+            })
+        }
         if (hasActiveChat) {
             requestResponseMessage = 3; // Existing chat
         }
@@ -215,6 +223,7 @@ const handleRequestStatusChange = functions
             const request: ChatRequest = snapshot.val();
             const codeId = request.codeId;
             const senderId = request.senderId;
+            const receiverId = request.receiverId; // owner of the code
             const statusString = request.status.toString();
 
             if (statusString === RequestStatus[RequestStatus.ACCEPTED]) {
@@ -225,7 +234,13 @@ const handleRequestStatusChange = functions
                 // Set code's property 'used' to true
                 const setCodeUsed = admin.database().ref(`/codes/${codeId}/used`).set(true);
                 const setClientCodeUsed = admin.database().ref(`/client_codes/${request.receiverId}/${codeId}/used`).set(true)
-                return Promise.all([removeOutgoingReq, setCodeUsed, setClientCodeUsed]);
+
+                // Add active chats for both users
+                const setSenderActiveChat = admin.database().ref(`/active_chats/${senderId}/${codeId}`).set(true);
+                const setReceiverActiveChat = admin.database().ref(`/active_chats/${receiverId}/${codeId}`).set(true);
+
+                return Promise.all([removeOutgoingReq, setCodeUsed, setClientCodeUsed,
+                    setSenderActiveChat, setReceiverActiveChat]);
             } else if (statusString === RequestStatus[RequestStatus.REJECTED]) {
                 // Revert hasActiveRequest property of code
                 const hasActiveReqPromise = admin.database().ref(`/codes/${codeId}/hasActiveRequest`).set(false);

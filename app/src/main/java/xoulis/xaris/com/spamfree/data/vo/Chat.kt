@@ -16,7 +16,8 @@ data class Chat(
     val memberName: String = "",
     val lastMessage: String = "",
     val timestamp: @RawValue Any = ServerValue.TIMESTAMP,
-    val messages: String = ""
+    val messages: String = "",
+    val finished: Boolean = false
 ) : Parcelable {
 
     @Exclude

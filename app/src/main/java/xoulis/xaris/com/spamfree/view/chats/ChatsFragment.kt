@@ -25,6 +25,7 @@ import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
 import xoulis.xaris.com.spamfree.databinding.ListItemChatBinding
+import xoulis.xaris.com.spamfree.util.*
 import xoulis.xaris.com.spamfree.view.MainActivity
 
 class ChatsFragment : Fragment() {
@@ -122,6 +123,7 @@ class ChatsFragment : Fragment() {
         chats_recyclerView.setHasFixedSize(true)
         chats_recyclerView.layoutManager =
                 LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        chats_recyclerView.itemAnimator = null // Set itemAnimator = null, in order to keep the alpha of items
         chats_recyclerView.adapter = chatsAdapter
     }
 

@@ -13,11 +13,11 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
-import xoulis.xaris.com.spamfree.CHAT_ID_EXTRA
-import xoulis.xaris.com.spamfree.FCM_CHAT_ID_KEY
+import xoulis.xaris.com.spamfree.util.CHAT_ID_EXTRA
+import xoulis.xaris.com.spamfree.util.FCM_CHAT_ID_KEY
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.User
-import xoulis.xaris.com.spamfree.userDbRef
+import xoulis.xaris.com.spamfree.util.userDbRef
 import java.util.*
 
 class SplashActivity : AppCompatActivity() {

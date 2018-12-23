@@ -4,10 +4,10 @@ import android.databinding.BindingAdapter
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import xoulis.xaris.com.spamfree.CHAT_TIMESTAMP_FORMAT
+import xoulis.xaris.com.spamfree.util.CHAT_TIMESTAMP_FORMAT
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.Chat
-import xoulis.xaris.com.spamfree.uid
+import xoulis.xaris.com.spamfree.util.uid
 import java.text.SimpleDateFormat
 import java.util.*
 

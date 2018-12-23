@@ -1,21 +1,12 @@
 package xoulis.xaris.com.spamfree.data.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
-import android.os.Build
-import android.support.v4.app.NotificationCompat
 import android.support.v4.content.LocalBroadcastManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import xoulis.xaris.com.spamfree.R
-import xoulis.xaris.com.spamfree.REQUEST_RESPONSE_EXTRA
-import xoulis.xaris.com.spamfree.REQUEST_RESPONSE_RECEIVED
-import xoulis.xaris.com.spamfree.userDbRef
-import xoulis.xaris.com.spamfree.view.MainActivity
+import xoulis.xaris.com.spamfree.util.REQUEST_RESPONSE_EXTRA
+import xoulis.xaris.com.spamfree.util.REQUEST_RESPONSE_RECEIVED
+import xoulis.xaris.com.spamfree.util.userDbRef
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 

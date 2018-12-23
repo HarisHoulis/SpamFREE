@@ -4,7 +4,6 @@ package xoulis.xaris.com.spamfree.view.codes
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.os.Handler
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -25,9 +24,9 @@ import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
-import xoulis.xaris.com.spamfree.getDialog
-import xoulis.xaris.com.spamfree.showSnackBar
-import xoulis.xaris.com.spamfree.userCodesDbRef
+import xoulis.xaris.com.spamfree.util.getDialog
+import xoulis.xaris.com.spamfree.util.showSnackBar
+import xoulis.xaris.com.spamfree.util.userCodesDbRef
 
 class CodesFragment : Fragment() {
 

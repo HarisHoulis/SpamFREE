@@ -39,7 +39,7 @@ const assignCodeToUser = async function (uid: string) {
         console.log(err);
         return err;
     }
-}
+};
 
 /* HTTP function called from the client (Android app), in order to assign new code to a user */
 const requestNewCode = functions.region('europe-west1').https.onCall((data, context) => {
@@ -53,17 +53,17 @@ const requestNewCode = functions.region('europe-west1').https.onCall((data, cont
         .catch(error => {
             throw new functions.https.HttpsError('unknown', error.message, error);
         });
-})
+});
 
 /* Assign code to newly created user.
 *  TRIGGERED when a new user is added to /users.
 */
 const assignCodeToNewUser = functions
     .database.ref('/users/{uid}')
-    .onCreate(async (_, context) => {
+    .onCreate((_, context) => {
         const uid = context.params.uid;
         return assignCodeToUser(uid);
-    })
+    });
 
 /* Assign new code to existing user
 *  TRIGGERED when a user's code is marked 'used = true'

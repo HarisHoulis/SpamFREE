@@ -5,8 +5,8 @@ import android.text.TextUtils
 import android.widget.TextView
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
-import xoulis.xaris.com.spamfree.CHAT_TIMESTAMP_FORMAT
-import xoulis.xaris.com.spamfree.MESSAGE_TIMESTAMP_FORMAT
+import xoulis.xaris.com.spamfree.util.CHAT_TIMESTAMP_FORMAT
+import xoulis.xaris.com.spamfree.util.MESSAGE_TIMESTAMP_FORMAT
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
 import java.text.SimpleDateFormat

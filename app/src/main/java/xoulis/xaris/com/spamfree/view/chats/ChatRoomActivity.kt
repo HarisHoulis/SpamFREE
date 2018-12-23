@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
@@ -22,6 +21,7 @@ import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatMessage
 import xoulis.xaris.com.spamfree.databinding.ListItemReceivedMessageBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSentMessageBinding
+import xoulis.xaris.com.spamfree.util.*
 import java.text.SimpleDateFormat
 import java.util.*
 

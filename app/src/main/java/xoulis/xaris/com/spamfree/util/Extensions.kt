@@ -1,4 +1,4 @@
-package xoulis.xaris.com.spamfree
+package xoulis.xaris.com.spamfree.util
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -8,7 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.view.View
-import xoulis.xaris.com.spamfree.util.CustomDialogHelper
+import xoulis.xaris.com.spamfree.R
 
 /* Views */
 fun View.enableView(enable: Boolean) {

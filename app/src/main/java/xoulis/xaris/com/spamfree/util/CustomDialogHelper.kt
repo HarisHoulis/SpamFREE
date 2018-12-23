@@ -12,7 +12,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import xoulis.xaris.com.spamfree.R
-import xoulis.xaris.com.spamfree.enableView
 
 class CustomDialogHelper(
     context: Context,

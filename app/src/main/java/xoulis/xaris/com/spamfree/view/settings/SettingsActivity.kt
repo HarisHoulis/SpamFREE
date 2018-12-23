@@ -9,8 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.NavUtils
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.MenuItem
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
 import com.theartofdev.edmodo.cropper.CropImage
@@ -19,6 +17,10 @@ import kotlinx.android.synthetic.main.activity_settings.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.ActivitySettingsBinding
+import xoulis.xaris.com.spamfree.util.getDialog
+import xoulis.xaris.com.spamfree.util.isNetworkAvailable
+import xoulis.xaris.com.spamfree.util.showSnackBar
+import xoulis.xaris.com.spamfree.util.userDbRef
 
 
 class SettingsActivity : AppCompatActivity() {

@@ -25,8 +25,8 @@ const sendNewMessageNotification = functions
 
         // Find receiver's ID
         const chatMembersSnapshot = await admin.database().ref(`/chat_members/${chatId}`).once('value');
-        const membersId: String[] = Object.keys(chatMembersSnapshot.val());
-        let receiverId;
+        const membersId: string[] = Object.keys(chatMembersSnapshot.val());
+        let receiverId: string;
         membersId.forEach(memberId => {
             if (memberId !== senderId) {
                 receiverId = memberId;

@@ -13,8 +13,9 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="?attr/selectableItemBackground">
+        android:alpha="@{chat.finished ? 0.5f : 1.0f}"
+        android:background="?attr/selectableItemBackground"
+        android:padding="16dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/item_chat_user_imageView"

@@ -1,4 +1,4 @@
-package xoulis.xaris.com.spamfree
+package xoulis.xaris.com.spamfree.util
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase

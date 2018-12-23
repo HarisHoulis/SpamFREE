@@ -17,6 +17,9 @@ import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
 import xoulis.xaris.com.spamfree.data.vo.RequestStatus
 import xoulis.xaris.com.spamfree.databinding.ListItemRequestBinding
+import xoulis.xaris.com.spamfree.util.incomingRequestsRef
+import xoulis.xaris.com.spamfree.util.outgoingRequestsRef
+import xoulis.xaris.com.spamfree.util.showView
 
 class RequestsFragment : Fragment() {
 
