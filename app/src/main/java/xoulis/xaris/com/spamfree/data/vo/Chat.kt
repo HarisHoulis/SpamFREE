@@ -11,6 +11,7 @@ data class Chat(
     val codeId: String = "",
     val ownerId: String = "",
     val ownerImage: String = "",
+    val memberId: String = "",
     val memberImage: String = "",
     val ownerName: String = "",
     val memberName: String = "",

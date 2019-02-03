@@ -9,3 +9,5 @@ const val FCM_CHAT_ID_KEY = "messageChatId"
 
 const val CHAT_TIMESTAMP_FORMAT = "dd/MM/yyyy"
 const val MESSAGE_TIMESTAMP_FORMAT = "HH:mm"
+
+const val PROFILE_FRAGMENT_TAG = "profile_fragment_tag"

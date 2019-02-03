@@ -22,8 +22,8 @@ android {
         applicationId "xoulis.xaris.com.spamfree"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         resConfigs "en", "el"
     }
@@ -48,6 +48,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:support-v4:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

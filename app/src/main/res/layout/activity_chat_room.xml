@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/chat_room_activity_root"
+    android:fitsSystemWindows="true"
     android:background="@color/colorPrimaryLight"
     android:focusableInTouchMode="true"
     tools:context=".view.chats.ChatRoomActivity">
@@ -78,6 +80,8 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:textSize="14sp"
+        android:focusable="true"
+        android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_fl"
@@ -90,6 +94,6 @@
         app:layout_constraintBottom_toTopOf="@+id/chat_room_ll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar_fl" />
+        app:layout_constraintTop_toBottomOf="@+id/chat_message_day_textView" />
 
 </android.support.constraint.ConstraintLayout>

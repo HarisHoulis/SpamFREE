@@ -38,12 +38,12 @@ fun Group.setAllOnClickListeners(listener: View.OnClickListener) {
 
 /* CustomDialogHelper */
 inline fun Context.getDialog(
-    title: String,
-    text: String = "",
-    inputType: Int = InputType.TYPE_CLASS_TEXT,
-    filter: InputFilter? = null,
-    autoDismiss: Boolean = true,
-    f: CustomDialogHelper.() -> Unit
+        title: String,
+        text: String = "",
+        inputType: Int = InputType.TYPE_CLASS_TEXT,
+        filter: InputFilter = InputFilter.LengthFilter(6),
+        autoDismiss: Boolean = true,
+        f: CustomDialogHelper.() -> Unit
 ): AlertDialog =
     CustomDialogHelper(this, title, text, inputType, filter, autoDismiss).apply {
         f()

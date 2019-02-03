@@ -1,20 +1,25 @@
 package xoulis.xaris.com.spamfree.view.chats
 
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.activity_chat_room.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.binding.setChatImage
 import xoulis.xaris.com.spamfree.data.vo.Chat
@@ -22,6 +27,7 @@ import xoulis.xaris.com.spamfree.data.vo.ChatMessage
 import xoulis.xaris.com.spamfree.databinding.ListItemReceivedMessageBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSentMessageBinding
 import xoulis.xaris.com.spamfree.util.*
+import xoulis.xaris.com.spamfree.view.settings.ProfileFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +40,8 @@ class ChatRoomActivity : AppCompatActivity() {
         SimpleDateFormat(CHAT_TIMESTAMP_FORMAT, Locale.getDefault())
     }
 
+    private var receiverId: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
@@ -42,12 +50,16 @@ class ChatRoomActivity : AppCompatActivity() {
         args?.getParcelable<Chat>(CHAT_EXTRA)?.let {
             chatMessagesLimit = it.messages.toInt()
             val chatId = it.codeId
-            val receiverName = if (it.ownerId == uid()) it.memberName else it.ownerName
-            val senderImage = if (it.ownerId == uid()) it.ownerImage else it.memberImage
-            val senderName = if (it.ownerId == uid()) it.ownerName else it.memberName
+            val isOwner = it.ownerId == uid()
+            val receiverName = if (isOwner) it.memberName else it.ownerName
+            val senderImage = if (isOwner) it.ownerImage else it.memberImage
+            val senderName = if (isOwner) it.ownerName else it.memberName
+            receiverId = if (isOwner) it.memberId else it.ownerId
+
             initToolbar(receiverName, it)
             setupMessagesRecyclerView(chatId)
             setupBottomToolbar(chatId, senderName, senderImage)
+            setChatImageListener()
         }
     }
 
@@ -57,90 +69,113 @@ class ChatRoomActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
             it.title = title
+            it.subtitle = "${chat.messages} messages left"
         }
         setChatImage(chat_room_profile_image, chat)
+    }
+
+    private fun setChatImageListener() {
+        chat_room_profile_image.setOnClickListener {
+            if (supportFragmentManager.backStackEntryCount == 0) {
+                val fragment = ProfileFragment.newInstance(receiverId)
+                supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(
+                        R.anim.slide_in_right,
+                        0,
+                        0,
+                        android.R.anim.slide_out_right
+                    )
+                    .replace(R.id.chat_room_activity_root, fragment)
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
     }
 
     private fun setupMessagesRecyclerView(chatId: String) {
         val recyclerView = messages_recyclerView
         val linearLayoutManager =
-                LinearLayoutManager(this@ChatRoomActivity, LinearLayoutManager.VERTICAL, false)
+            LinearLayoutManager(this@ChatRoomActivity, LinearLayoutManager.VERTICAL, false)
 
         val messagesRef = FirebaseDatabase
-                .getInstance()
-                .getReference("/messages/$chatId")
-                .orderByChild("timestamp")
+            .getInstance()
+            .getReference("/messages/$chatId")
+            .orderByChild("timestamp")
 
         val options = FirebaseRecyclerOptions
-                .Builder<ChatMessage>()
-                .setLifecycleOwner(this)
-                .setQuery(messagesRef, ChatMessage::class.java)
-                .build()
+            .Builder<ChatMessage>()
+            .setLifecycleOwner(this)
+            .setQuery(messagesRef, ChatMessage::class.java)
+            .build()
 
         val adapter =
-                object : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder?>(options) {
-                    override fun getItemViewType(position: Int): Int {
-                        val chatMessage = getItem(position)
-                        return if (chatMessage.senderId == uid()) {
-                            VIEW_TYPE_MESSAGE_SENT
-                        } else {
-                            VIEW_TYPE_MESSAGE_RECEIVED
-                        }
-                    }
-
-                    override fun onCreateViewHolder(
-                            p0: ViewGroup,
-                            viewType: Int
-                    ): RecyclerView.ViewHolder {
-                        val inflater = LayoutInflater.from(p0.context)
-                        return when (viewType) {
-                            VIEW_TYPE_MESSAGE_SENT -> {
-                                val itemBinding =
-                                        ListItemSentMessageBinding.inflate(inflater, p0, false)
-                                SentMessagesViewHolder(itemBinding)
-                            }
-                            VIEW_TYPE_MESSAGE_RECEIVED -> {
-                                val itemBinding =
-                                        ListItemReceivedMessageBinding.inflate(inflater, p0, false)
-                                ReceivedMessagesViewHolder(itemBinding)
-                            }
-                            else -> throw Exception("Wrong message item view type!")
-                        }
-                    }
-
-                    override fun onBindViewHolder(
-                            holder: RecyclerView.ViewHolder,
-                            position: Int,
-                            model: ChatMessage
-                    ) {
-                        when (holder.itemViewType) {
-                            VIEW_TYPE_MESSAGE_SENT -> (holder as SentMessagesViewHolder).bind(model)
-                            VIEW_TYPE_MESSAGE_RECEIVED -> (holder as ReceivedMessagesViewHolder).bind(
-                                    model
-                            )
-                        }
-                    }
-
-                    override fun onChildChanged(
-                            type: ChangeEventType,
-                            snapshot: DataSnapshot,
-                            newIndex: Int,
-                            oldIndex: Int
-                    ) {
-                        super.onChildChanged(type, snapshot, newIndex, oldIndex)
-                        if (type == ChangeEventType.ADDED) {
-                            val message = snapshot.getValue(ChatMessage::class.java)!!
-                            if (message.senderId == uid()) {
-                                sentMessagesCount++
-                            }
-                        }
-                    }
-
-                    override fun onDataChanged() {
-                        super.onDataChanged()
-                        chat_message_day_textView.showView(itemCount != 0)
+            object : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder?>(options) {
+                override fun getItemViewType(position: Int): Int {
+                    val chatMessage = getItem(position)
+                    return if (chatMessage.senderId == uid()) {
+                        VIEW_TYPE_MESSAGE_SENT
+                    } else {
+                        VIEW_TYPE_MESSAGE_RECEIVED
                     }
                 }
+
+                override fun onCreateViewHolder(
+                    p0: ViewGroup,
+                    viewType: Int
+                ): RecyclerView.ViewHolder {
+                    val inflater = LayoutInflater.from(p0.context)
+                    return when (viewType) {
+                        VIEW_TYPE_MESSAGE_SENT -> {
+                            val itemBinding =
+                                ListItemSentMessageBinding.inflate(inflater, p0, false)
+                            SentMessagesViewHolder(itemBinding)
+                        }
+                        VIEW_TYPE_MESSAGE_RECEIVED -> {
+                            val itemBinding =
+                                ListItemReceivedMessageBinding.inflate(inflater, p0, false)
+                            ReceivedMessagesViewHolder(itemBinding)
+                        }
+                        else -> throw Exception("Wrong message item view type!")
+                    }
+                }
+
+                override fun onBindViewHolder(
+                    holder: RecyclerView.ViewHolder,
+                    position: Int,
+                    model: ChatMessage
+                ) {
+                    when (holder.itemViewType) {
+                        VIEW_TYPE_MESSAGE_SENT -> (holder as SentMessagesViewHolder).bind(
+                            model,
+                            position
+                        )
+                        VIEW_TYPE_MESSAGE_RECEIVED -> (holder as ReceivedMessagesViewHolder).bind(
+                            model,
+                            position
+                        )
+                    }
+                }
+
+                override fun onChildChanged(
+                    type: ChangeEventType,
+                    snapshot: DataSnapshot,
+                    newIndex: Int,
+                    oldIndex: Int
+                ) {
+                    super.onChildChanged(type, snapshot, newIndex, oldIndex)
+                    if (type == ChangeEventType.ADDED) {
+                        val message = snapshot.getValue(ChatMessage::class.java)!!
+                        if (message.senderId == uid()) {
+                            sentMessagesCount++
+                        }
+                    }
+                }
+
+                override fun onDataChanged() {
+                    super.onDataChanged()
+                    chat_message_day_textView.showView(itemCount != 0)
+                }
+            }
 
         // Scroll to the bottom every time a new message is added,
         // only if the user is already at the bottom
@@ -150,9 +185,9 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 val messagesCount = adapter.itemCount
                 val lastVisiblePosition =
-                        linearLayoutManager.findLastCompletelyVisibleItemPosition()
+                    linearLayoutManager.findLastCompletelyVisibleItemPosition()
                 if (lastVisiblePosition == -1 || (positionStart >= (messagesCount - 1) &&
-                                lastVisiblePosition == (positionStart - 1))
+                            lastVisiblePosition == (positionStart - 1))
                 ) {
                     recyclerView.scrollToPosition(positionStart)
                 }
@@ -196,12 +231,12 @@ class ChatRoomActivity : AppCompatActivity() {
         val messageBody = chat_room_editText.text.toString().trim()
         val timestamp = ServerValue.TIMESTAMP
         val message = ChatMessage(
-                chatId,
-                uid(),
-                senderName,
-                senderImage,
-                messageBody,
-                timestamp
+            chatId,
+            uid(),
+            senderName,
+            senderImage,
+            messageBody,
+            timestamp
         )
 
         // Update DB
@@ -212,12 +247,19 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private inner class SentMessagesViewHolder(private val itemBinding: ListItemSentMessageBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
+        RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(chatMessage: ChatMessage) {
-            if (sentMessagesCount == chatMessagesLimit) {
+        fun bind(chatMessage: ChatMessage, pos: Int) {
+            // Add margin to 1st message, so as not to interfere with the date
+            if (pos == 0) {
+                itemBinding.root.layoutParams = getMarginParams(top = 26)
+            }
+
+            val leftMessages = chatMessagesLimit - sentMessagesCount
+            if (leftMessages == 0) {
                 chat_room_editText.isEnabled = false
             }
+            supportActionBar?.subtitle = "$leftMessages messages left"
             itemBinding.chatMessage = chatMessage
             itemBinding.executePendingBindings()
         }
@@ -225,13 +267,26 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private inner class ReceivedMessagesViewHolder(private val itemBinding: ListItemReceivedMessageBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
+        RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(chatMessage: ChatMessage) {
+        fun bind(chatMessage: ChatMessage, pos: Int) {
+            // Add margin to 1st message, so as not to interfere with the date
+            if (pos == 0) {
+                itemBinding.receivedMessageRoot.layoutParams = getMarginParams(top = 26)
+            }
+
             itemBinding.chatMessage = chatMessage
             itemBinding.executePendingBindings()
         }
     }
+
+    private fun getMarginParams(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
+        ConstraintLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+            setMargins(left, top, right, bottom)
+        }
 
     private companion object {
         const val VIEW_TYPE_MESSAGE_SENT = 1

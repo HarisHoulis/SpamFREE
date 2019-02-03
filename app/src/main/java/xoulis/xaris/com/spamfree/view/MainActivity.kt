@@ -20,7 +20,7 @@ import xoulis.xaris.com.spamfree.util.*
 import xoulis.xaris.com.spamfree.view.chats.ChatsFragment
 import xoulis.xaris.com.spamfree.view.codes.CodesFragment
 import xoulis.xaris.com.spamfree.view.requests.RequestsFragment
-import xoulis.xaris.com.spamfree.view.settings.SettingsActivity
+import xoulis.xaris.com.spamfree.view.settings.ProfileFragment
 
 class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
 
@@ -81,7 +81,12 @@ class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
         val id = item.itemId
         return when (id) {
             R.id.action_settings -> {
-                startActivity(Intent(this, SettingsActivity::class.java))
+                val fragment = ProfileFragment.newInstance(uid())
+                supportFragmentManager.beginTransaction()
+                    .setCustomAnimations(R.anim.slide_in_right,0,0, android.R.anim.slide_out_right)
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit()
                 true
             }
             R.id.action_logout -> {

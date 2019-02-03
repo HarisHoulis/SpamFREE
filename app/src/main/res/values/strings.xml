@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">SpamFree</string>
-    <string name="splash_activity_app_name">Splash<b>FREE</b></string>
+    <string name="splash_activity_app_name">Spam<b>FREE</b></string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_notification_channel_id</string>
     <string name="default_notification_channel_name" translatable="false">New Messages</string>
@@ -51,5 +51,8 @@
     <string name="existing_req">You have already sent a request to that person!</string>
     <string name="existing_chat">You are already chatting with that persons</string>
     <string name="req_sent_successfully">Your request was sent successfully</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
