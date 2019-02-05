@@ -74,14 +74,14 @@ class ProfileFragment() : Fragment() {
     }
 
     fun onImageChangeClick() {
-        if (context!!.isNetworkAvailable()) {
+        if (!context!!.isNetworkAvailable()) {
             binding.settingsActivityRoot.showSnackBar(xoulis.xaris.com.spamfree.R.string.no_internet_connection)
         } else {
             CropImage.activity()
                 .setAspectRatio(1, 1)
                 .setMaxCropResultSize(5000, 5000)
                 .setGuidelines(CropImageView.Guidelines.ON)
-                .start(activity!!)
+                .start(context!!, this)
         }
     }
 
@@ -90,10 +90,11 @@ class ProfileFragment() : Fragment() {
             val result = CropImage.getActivityResult(data)
             uploadUserPhoto(result.uri)
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun uploadUserPhoto(selectedImageUri: Uri) {
-        if (context!!.isNetworkAvailable()) {
+        if (!context!!.isNetworkAvailable()) {
             binding.settingsActivityRoot.showSnackBar(R.string.no_internet_connection)
         } else {
             selectedImageUri.lastPathSegment?.let {

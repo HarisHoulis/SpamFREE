@@ -252,7 +252,10 @@ class ChatRoomActivity : AppCompatActivity() {
         fun bind(chatMessage: ChatMessage, pos: Int) {
             // Add margin to 1st message, so as not to interfere with the date
             if (pos == 0) {
-                itemBinding.root.layoutParams = getMarginParams(top = 26)
+                val view = itemBinding.root
+                val p = view.layoutParams as ViewGroup.MarginLayoutParams
+                p.setMargins(p.leftMargin, 26, p.rightMargin, p.bottomMargin)
+                view.layoutParams = p
             }
 
             val leftMessages = chatMessagesLimit - sentMessagesCount
@@ -272,7 +275,10 @@ class ChatRoomActivity : AppCompatActivity() {
         fun bind(chatMessage: ChatMessage, pos: Int) {
             // Add margin to 1st message, so as not to interfere with the date
             if (pos == 0) {
-                itemBinding.receivedMessageRoot.layoutParams = getMarginParams(top = 26)
+                val view = itemBinding.root
+                val p = view.layoutParams as ViewGroup.MarginLayoutParams
+                p.setMargins(p.leftMargin, 26, p.rightMargin, p.bottomMargin)
+                view.layoutParams = p
             }
 
             itemBinding.chatMessage = chatMessage

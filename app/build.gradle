@@ -13,7 +13,7 @@ android {
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
             keyAlias properties.getProperty('keyAlias')
             keyPassword properties.getProperty('keyPassword')
-            storeFile file(properties.getProperty('storeFile'))
+            storeFile rootProject.file(properties.getProperty('storeFile'))
             storePassword properties.getProperty('storePassword')
         }
     }
@@ -22,8 +22,8 @@ android {
         applicationId "xoulis.xaris.com.spamfree"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 4
-        versionName "1.5"
+        versionCode 6
+        versionName "1.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         resConfigs "en", "el"
     }
