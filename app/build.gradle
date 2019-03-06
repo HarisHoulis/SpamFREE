@@ -24,7 +24,7 @@ android {
         targetSdkVersion 28
         versionCode 6
         versionName "1.8"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en", "el"
     }
     buildTypes {
@@ -48,27 +48,26 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:support-v4:28.0.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
 
     //    Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
+    // Legacy support libraries
+    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
+    implementation "androidx.browser:browser:$legacy_support_version"
+    implementation "androidx.legacy:legacy-support-v4:$legacy_support_version"
+    implementation "androidx.exifinterface:exifinterface:$legacy_support_version"
+    implementation "androidx.recyclerview:recyclerview:$legacy_support_version"
+
     //    Support libraries
-    implementation "com.android.support:support-v4:$support_version"
-    implementation "com.android.support:customtabs:$support_version"
-    implementation "com.android.support:support-v4:$support_version"
-    implementation "com.android.support:appcompat-v7:$support_version"
-    implementation "com.android.support:design:$support_version"
-    implementation "com.android.support.constraint:constraint-layout:$constraint_verison"
-    implementation "com.android.support:exifinterface:$support_version"
-    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "androidx.appcompat:appcompat:$support_version"
+    implementation "com.google.android.material:material:$legacy_support_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraint_version"
 
     //    Architecture Components
-    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
-    kapt "android.arch.lifecycle:compiler:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
     //    Firebase
     implementation "com.google.firebase:firebase-core:$firebase_core_version"
@@ -92,6 +91,10 @@ dependencies {
 
     //    Material Progress Bar
     implementation "me.zhanghai.android.materialprogressbar:library:$material_progress_bar_version"
+
+    implementation "com.google.android.gms:play-services-location:$fused_location_version"
+
+    implementation 'com.github.florent37:runtime-permission-kotlin:1.1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -9,7 +9,7 @@
             type="xoulis.xaris.com.spamfree.data.vo.ChatMessage"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/received_message_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
             app:messageTimestamp="@{chatMessage.getTimestampLong}"
             tools:text="13:34" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,5 +65,5 @@
             app:layout_constraintGuide_begin="20dp"
             app:layout_constraintGuide_percent="0.65" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

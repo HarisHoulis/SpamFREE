@@ -1,6 +1,6 @@
 package xoulis.xaris.com.spamfree.view.settings
 
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.ViewModel
 import xoulis.xaris.com.spamfree.util.userDbRef
 import xoulis.xaris.com.spamfree.util.usersDbRef
 

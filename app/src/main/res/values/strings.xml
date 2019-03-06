@@ -18,6 +18,7 @@
     <string name="request_sent">Request sent</string>
     <string name="used_code">This code has already been used.</string>
     <string name="failed_to_add_new_code">Couldn\'t add new code. Check your connection and try again.</string>
+    <string name="need_location_permission">We need access to your location for ensuring safety.</string>
 
     <!-- Misc -->
     <string name="title_activity_main">MainActivity</string>
@@ -29,8 +30,11 @@
     <string name="used">used</string>
     <string name="at">At:</string>
 
+    <!-- Menu -->
     <string name="action_settings">Account Settings</string>
     <string name="action_logout">Log Out</string>
+    <string name="menu_action_messages">Messages</string>
+    <string name="menu_action_date">Expiration date</string>
 
     <!-- RequestsFragment -->
     <string name="incoming_requests">Incoming Requests</string>

@@ -27,7 +27,7 @@
             type="xoulis.xaris.com.spamfree.view.settings.ProfileFragment" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/settings_activity_root"
         android:layout_width="match_parent"
         android:elevation="6dp"
@@ -60,7 +60,7 @@
             app:layout_constraintVertical_bias="1.0"
             app:loadUserImage="@{user.image ?? ``}" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -135,19 +135,19 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <android.support.constraint.Guideline
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.95" />
 
-        <android.support.constraint.Group
+        <androidx.constraintlayout.widget.Group
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="@{showButtons ? View.VISIBLE : View.GONE}"
             app:constraint_referenced_ids="user_change_image_button,user_change_status_button" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

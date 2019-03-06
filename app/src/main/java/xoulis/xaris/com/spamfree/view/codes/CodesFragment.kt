@@ -2,18 +2,19 @@ package xoulis.xaris.com.spamfree.view.codes
 
 
 import android.content.Intent
-import android.databinding.DataBindingUtil
+import androidx.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.text.InputType
 import android.util.Log
-import android.view.HapticFeedbackConstants
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.FirebaseDatabase
@@ -28,15 +29,17 @@ import xoulis.xaris.com.spamfree.util.getDialog
 import xoulis.xaris.com.spamfree.util.showSnackBar
 import xoulis.xaris.com.spamfree.util.userCodesDbRef
 
-class CodesFragment : Fragment() {
+class CodesFragment : Fragment(), CodeListener {
 
     private lateinit var binding: FragmentCodesBinding
 
-    private lateinit var codesAdapter: FirebaseRecyclerAdapter<ClientCode, RecyclerView.ViewHolder>
+    private lateinit var codesAdapter: CodesAdapter
+
+    private var currentActionMode: ActionMode? = null
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_codes, container, false)
         return binding.root
@@ -55,120 +58,48 @@ class CodesFragment : Fragment() {
     private fun fetchUserCodes() {
         val query = userCodesDbRef().orderByChild("timestamp")
         val options =
-                FirebaseRecyclerOptions.Builder<ClientCode>()
-                        .setLifecycleOwner(this)
-                        .setQuery(query, ClientCode::class.java)
-                        .build()
+            FirebaseRecyclerOptions.Builder<ClientCode>()
+                .setLifecycleOwner(this)
+                .setQuery(query, ClientCode::class.java)
+                .build()
 
-        codesAdapter =
-                object : FirebaseRecyclerAdapter<ClientCode, RecyclerView.ViewHolder>(options) {
+        codesAdapter = CodesAdapter(options, this)
 
-                    override fun getItemViewType(position: Int): Int {
-                        return if (position == itemCount - 1) {
-                            MOST_RECENT_CODE_VIEW_TYPE
-                        } else {
-                            SECONDARY_CODE_VIEW_TYPE
-                        }
-                    }
-
-                    override fun onCreateViewHolder(
-                            p0: ViewGroup,
-                            viewType: Int
-                    ): RecyclerView.ViewHolder {
-                        val inflater = LayoutInflater.from(p0.context)
-                        return when (viewType) {
-                            MOST_RECENT_CODE_VIEW_TYPE -> {
-                                val itemBinding =
-                                        ListItemMostRecentCodeBinding.inflate(inflater, p0, false)
-                                MostRecentCodeViewHolder(itemBinding)
-                            }
-                            SECONDARY_CODE_VIEW_TYPE -> {
-                                val itemBinding =
-                                        ListItemSecondaryCodeBinding.inflate(inflater, p0, false)
-                                SecondaryCodesViewHolder(itemBinding)
-                            }
-                            else -> throw Exception("Wrong code item view type!")
-                        }
-                    }
-
-                    override fun onBindViewHolder(
-                            holder: RecyclerView.ViewHolder,
-                            position: Int,
-                            model: ClientCode
-                    ) {
-                        when (holder.itemViewType) {
-                            MOST_RECENT_CODE_VIEW_TYPE -> (holder as MostRecentCodeViewHolder).bind(
-                                    model
-                            )
-                            SECONDARY_CODE_VIEW_TYPE -> (holder as SecondaryCodesViewHolder).bind(
-                                    model,
-                                    position
-                            )
-                        }
-                    }
-                }
-
+        val divider = DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
+            setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
+        }
         val recyclerView = binding.codesRecyclerView
-        recyclerView.setHasFixedSize(true)
-        recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true)
-                        .apply {
-                            stackFromEnd = true
-                        }
-        val divider = DividerItemDecoration(context, LinearLayoutManager.VERTICAL)
-        divider.setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
-        recyclerView.addItemDecoration(divider)
-        recyclerView.itemAnimator = null // Set itemAnimator = null, in order to keep the alpha of items
-        recyclerView.adapter = codesAdapter
+        with(recyclerView) {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, true).apply {
+                stackFromEnd = true
+            }
+            addItemDecoration(divider)
+            // Set itemAnimator = null, in order to keep the alpha of items
+            itemAnimator = null
+            adapter = codesAdapter
+        }
     }
 
     private fun requestNewCode() {
+        // TODO fix indexing problem
         showLoading(true)
         val functions = FirebaseFunctions.getInstance("europe-west1")
         functions.getHttpsCallable("requestNewCode")
-                .call()
-                .addOnCompleteListener { task ->
-                    Log.i("sds","sdsd")
-                    if (!task.isSuccessful) {
-                        fragment_codes_root.showSnackBar(R.string.failed_to_add_new_code)
-                    }
-                    showLoading(false)
+            .call()
+            .addOnCompleteListener { task ->
+                Log.i("sds", "sdsd")
+                if (!task.isSuccessful) {
+                    fragment_codes_root.showSnackBar(R.string.failed_to_add_new_code)
                 }
-    }
-
-    private fun View.setLongClickListener(codeId: String) {
-        setOnLongClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_code_subject))
-                putExtra(Intent.EXTRA_TEXT, getString(R.string.share_code_text, codeId))
-                type = "text/plain"
+                showLoading(false)
             }
-            startActivity(Intent.createChooser(shareIntent, getString(R.string.share_code_title)))
-            false
-        }
-    }
-
-    private fun View.setChangeMessagesLimitListener(code: ClientCode) {
-        val listener = View.OnClickListener {
-            val title = "Number of messages"
-            val text = code.messages
-            val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
-                setEditTextWatcher()
-                setOkButtonClickListener { userInput ->
-                    updateCodeMessages(code.id, userInput)
-                }
-            }
-            dialog.show()
-        }
-        setOnClickListener(listener)
     }
 
     private fun updateCodeMessages(codeId: String, messages: String) {
         userCodesDbRef().child("$codeId/messages").setValue(messages)
         FirebaseDatabase.getInstance().getReference("/codes/$codeId/messages")
-                .setValue(messages)
+            .setValue(messages)
     }
 
     private fun showLoading(show: Boolean) {
@@ -176,33 +107,30 @@ class CodesFragment : Fragment() {
         binding.addNewCodeFab.isEnabled = !show
     }
 
-    inner class MostRecentCodeViewHolder(private val itemBinding: ListItemMostRecentCodeBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
-
-        fun bind(code: ClientCode) {
-            itemBinding.code = code
-            itemBinding.mostRecentCodeTextVew.setLongClickListener(code.id)
-            itemBinding.mostRecentCodeEditMessagesImageView.setChangeMessagesLimitListener(code)
-            itemBinding.executePendingBindings()
+    override fun onCodeLongClick(view: View, codeId: String) {
+        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.share_code_subject))
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_code_text, codeId))
+            type = "text/plain"
         }
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.share_code_title)))
     }
 
-    inner class SecondaryCodesViewHolder(private val itemBinding: ListItemSecondaryCodeBinding) :
-            RecyclerView.ViewHolder(itemBinding.root) {
-
-        fun bind(code: ClientCode, position: Int) {
-            itemBinding.index = codesAdapter.itemCount - position
-            itemBinding.code = code
-            if (!code.used) {
-                itemBinding.root.setLongClickListener(code.id)
-                itemBinding.secondaryCodeEditMessagesImageView.setChangeMessagesLimitListener(code)
+    override fun onCodeChangeMessageLimitClick(code: ClientCode) {
+        val title = "Number of messages"
+        val text = code.messages
+        val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
+            setEditTextWatcher()
+            setOkButtonClickListener { userInput ->
+                updateCodeMessages(code.id, userInput)
             }
-            itemBinding.executePendingBindings()
         }
+        dialog.show()
     }
 
-    private companion object {
-        const val MOST_RECENT_CODE_VIEW_TYPE = 0
-        const val SECONDARY_CODE_VIEW_TYPE = 1
+    override fun onCodeChangeDateClick(code: ClientCode) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

@@ -1,22 +1,28 @@
 package xoulis.xaris.com.spamfree.view.requests
 
-
+import android.Manifest
+import android.annotation.SuppressLint
+import android.location.Location
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_requests.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
+import xoulis.xaris.com.spamfree.data.vo.LocationPoint
 import xoulis.xaris.com.spamfree.data.vo.RequestStatus
 import xoulis.xaris.com.spamfree.databinding.ListItemRequestBinding
+import xoulis.xaris.com.spamfree.util.getLastLocation
 import xoulis.xaris.com.spamfree.util.incomingRequestsRef
 import xoulis.xaris.com.spamfree.util.outgoingRequestsRef
 import xoulis.xaris.com.spamfree.util.showView
@@ -24,6 +30,16 @@ import xoulis.xaris.com.spamfree.util.showView
 class RequestsFragment : Fragment() {
 
     private lateinit var incomingReqAdapter: FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private lateinit var currentAcceptedRequest: ChatRequest
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity!!)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +62,8 @@ class RequestsFragment : Fragment() {
             .addOnSuccessListener {
                 itemRef.removeValue()
             }
-        createNewChat(request)
+        currentAcceptedRequest = request
+        getLocationAndCreateChat(request)
     }
 
     fun onRejectRequestClick(pos: Int) {
@@ -58,7 +75,18 @@ class RequestsFragment : Fragment() {
             }
     }
 
-    private fun createNewChat(request: ChatRequest) {
+    @SuppressLint("MissingPermission")
+    private fun getLocationAndCreateChat(request: ChatRequest) {
+        askPermission(Manifest.permission.ACCESS_FINE_LOCATION) {
+            fusedLocationClient.getLastLocation { lp ->
+                createNewChat(request, lp)
+            }
+        }.onDeclined {
+            createNewChat(request, LocationPoint())
+        }
+    }
+
+    private fun createNewChat(request: ChatRequest, locationPoint: LocationPoint) {
         val codeId = request.codeId
         val ownerId = request.receiverId
         val memberId = request.senderId
@@ -87,7 +115,8 @@ class RequestsFragment : Fragment() {
                 memberImage,
                 ownerName,
                 memberName,
-                messages = messagesLimit
+                messages = messagesLimit,
+                location = locationPoint
             )
         )
     }
@@ -98,30 +127,34 @@ class RequestsFragment : Fragment() {
             .setQuery(incomingRequestsRef(), ChatRequest::class.java)
             .build()
         incomingReqAdapter =
-                object : FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>(options) {
-                    override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RequestsViewHolder {
-                        val inflater = LayoutInflater.from(p0.context)
-                        val itemBinding =
-                            ListItemRequestBinding.inflate(inflater, p0, false)
-                        return RequestsViewHolder(itemBinding)
-                    }
-
-                    override fun onBindViewHolder(
-                        holder: RequestsViewHolder,
-                        position: Int,
-                        model: ChatRequest
-                    ) {
-                        holder.bind(model)
-                    }
-
-                    override fun onDataChanged() {
-                        super.onDataChanged()
-                        empty_incoming_requests_textView.showView(itemCount == 0)
-                    }
+            object : FirebaseRecyclerAdapter<ChatRequest, RequestsViewHolder>(options) {
+                override fun onCreateViewHolder(p0: ViewGroup, p1: Int): RequestsViewHolder {
+                    val inflater = LayoutInflater.from(p0.context)
+                    val itemBinding =
+                        ListItemRequestBinding.inflate(inflater, p0, false)
+                    return RequestsViewHolder(itemBinding)
                 }
+
+                override fun onBindViewHolder(
+                    holder: RequestsViewHolder,
+                    position: Int,
+                    model: ChatRequest
+                ) {
+                    holder.bind(model)
+                }
+
+                override fun onDataChanged() {
+                    super.onDataChanged()
+                    empty_incoming_requests_textView.showView(itemCount == 0)
+                }
+            }
         requests_received_recyclerView.setHasFixedSize(true)
         requests_received_recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            androidx.recyclerview.widget.LinearLayoutManager(
+                context,
+                RecyclerView.VERTICAL,
+                false
+            )
         requests_received_recyclerView.adapter = incomingReqAdapter
     }
 
@@ -152,12 +185,13 @@ class RequestsFragment : Fragment() {
             }
         }
         requests_sent_recyclerView.setHasFixedSize(true)
-        requests_sent_recyclerView.layoutManager = LinearLayoutManager(context)
+        requests_sent_recyclerView.layoutManager =
+            androidx.recyclerview.widget.LinearLayoutManager(context)
         requests_sent_recyclerView.adapter = adapter
     }
 
     inner class RequestsViewHolder(private val itemBinding: ListItemRequestBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(request: ChatRequest) {
             itemBinding.request = request
@@ -176,5 +210,9 @@ class RequestsFragment : Fragment() {
                 onRejectRequestClick(adapterPosition)
             }
         }
+    }
+
+    companion object {
+        const val PERMISSIONS_REQUEST_FINE_LOCATION = 199
     }
 }

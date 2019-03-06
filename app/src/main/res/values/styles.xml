@@ -2,10 +2,19 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionModeCloseButtonStyle">
+            @style/ActionButtonTheme
+        </item>
+        <item name="actionModeBackground">@drawable/cab_background</item>
+    </style>
+
+    <style name="ActionButtonTheme" parent="Widget.AppCompat.Light.ActionButton.CloseMode">
+        <item name="android:tint">@android:color/black</item>
     </style>
 
 </resources>

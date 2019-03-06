@@ -1,29 +1,30 @@
 package xoulis.xaris.com.spamfree.view.chats
 
+import android.Manifest
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.github.florent37.runtimepermission.kotlin.askPermission
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
-import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.activity_chat_room.*
-import kotlinx.android.synthetic.main.fragment_profile.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.binding.setChatImage
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatMessage
+import xoulis.xaris.com.spamfree.data.vo.LocationPoint
 import xoulis.xaris.com.spamfree.databinding.ListItemReceivedMessageBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSentMessageBinding
 import xoulis.xaris.com.spamfree.util.*
@@ -36,6 +37,8 @@ class ChatRoomActivity : AppCompatActivity() {
     private var sentMessagesCount: Int = 0
     private var chatMessagesLimit: Int = 0
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     private val sdf by lazy {
         SimpleDateFormat(CHAT_TIMESTAMP_FORMAT, Locale.getDefault())
     }
@@ -46,16 +49,22 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         val args = intent.extras
         args?.getParcelable<Chat>(CHAT_EXTRA)?.let {
             chatMessagesLimit = it.messages.toInt()
             val chatId = it.codeId
             val isOwner = it.ownerId == uid()
+            val originalLocation = it.location
             val receiverName = if (isOwner) it.memberName else it.ownerName
             val senderImage = if (isOwner) it.ownerImage else it.memberImage
             val senderName = if (isOwner) it.ownerName else it.memberName
             receiverId = if (isOwner) it.memberId else it.ownerId
 
+            if (!isOwner) {
+                getLocationDistance(originalLocation)
+            }
             initToolbar(receiverName, it)
             setupMessagesRecyclerView(chatId)
             setupBottomToolbar(chatId, senderName, senderImage)
@@ -95,7 +104,11 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun setupMessagesRecyclerView(chatId: String) {
         val recyclerView = messages_recyclerView
         val linearLayoutManager =
-            LinearLayoutManager(this@ChatRoomActivity, LinearLayoutManager.VERTICAL, false)
+            androidx.recyclerview.widget.LinearLayoutManager(
+                this@ChatRoomActivity,
+                RecyclerView.VERTICAL,
+                false
+            )
 
         val messagesRef = FirebaseDatabase
             .getInstance()
@@ -109,7 +122,10 @@ class ChatRoomActivity : AppCompatActivity() {
             .build()
 
         val adapter =
-            object : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder?>(options) {
+            object :
+                FirebaseRecyclerAdapter<ChatMessage, androidx.recyclerview.widget.RecyclerView.ViewHolder?>(
+                    options
+                ) {
                 override fun getItemViewType(position: Int): Int {
                     val chatMessage = getItem(position)
                     return if (chatMessage.senderId == uid()) {
@@ -122,7 +138,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 override fun onCreateViewHolder(
                     p0: ViewGroup,
                     viewType: Int
-                ): RecyclerView.ViewHolder {
+                ): androidx.recyclerview.widget.RecyclerView.ViewHolder {
                     val inflater = LayoutInflater.from(p0.context)
                     return when (viewType) {
                         VIEW_TYPE_MESSAGE_SENT -> {
@@ -140,7 +156,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 }
 
                 override fun onBindViewHolder(
-                    holder: RecyclerView.ViewHolder,
+                    holder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
                     position: Int,
                     model: ChatMessage
                 ) {
@@ -179,7 +195,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
         // Scroll to the bottom every time a new message is added,
         // only if the user is already at the bottom
-        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object :
+            androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
 
@@ -197,8 +214,13 @@ class ChatRoomActivity : AppCompatActivity() {
         recyclerView.layoutManager = linearLayoutManager
         recyclerView.adapter = adapter
 
-        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        recyclerView.addOnScrollListener(object :
+            androidx.recyclerview.widget.RecyclerView.OnScrollListener() {
+            override fun onScrolled(
+                recyclerView: androidx.recyclerview.widget.RecyclerView,
+                dx: Int,
+                dy: Int
+            ) {
                 super.onScrolled(recyclerView, dx, dy)
                 val pos = linearLayoutManager.findFirstVisibleItemPosition()
                 val firstVisibleMessageTimestamp = adapter.getItem(pos).getTimestampLong()
@@ -207,7 +229,11 @@ class ChatRoomActivity : AppCompatActivity() {
         })
     }
 
-    private fun setupBottomToolbar(chatId: String, senderName: String, senderImage: String) {
+    private fun setupBottomToolbar(
+        chatId: String,
+        senderName: String,
+        senderImage: String
+    ) {
         chat_room_editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {}
 
@@ -220,9 +246,33 @@ class ChatRoomActivity : AppCompatActivity() {
 
         val currentText = chat_room_editText.text
         chat_room_send_button.enableView(currentText.toString().trim().isNotEmpty())
-
         chat_room_send_button.setOnClickListener {
             sendMessage(chatId, senderName, senderImage)
+        }
+    }
+
+    private fun getLocationDistance(originalLocation: LocationPoint) {
+        askPermission(Manifest.permission.ACCESS_FINE_LOCATION) {
+            fusedLocationClient.getLastLocation {
+                val distance = it.computeDistanceTo(originalLocation)
+                chat_room_editText.enableView(distance <= MAXIMUM_DISTANCE)
+            }
+        }.onDeclined { result ->
+            if (!result.hasForeverDenied()) {
+                AlertDialog.Builder(this@ChatRoomActivity)
+                    .setMessage(getString(R.string.need_location_permission))
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        result.askAgain()
+                    }
+                    .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                        dialog.dismiss()
+                        this@ChatRoomActivity.finish()
+                    }
+                    .show()
+            } else {
+                result.goToSettings()
+                this@ChatRoomActivity.finish()
+            }
         }
     }
 
@@ -247,7 +297,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private inner class SentMessagesViewHolder(private val itemBinding: ListItemSentMessageBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(chatMessage: ChatMessage, pos: Int) {
             // Add margin to 1st message, so as not to interfere with the date
@@ -270,7 +320,7 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private inner class ReceivedMessagesViewHolder(private val itemBinding: ListItemReceivedMessageBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
+        androidx.recyclerview.widget.RecyclerView.ViewHolder(itemBinding.root) {
 
         fun bind(chatMessage: ChatMessage, pos: Int) {
             // Add margin to 1st message, so as not to interfere with the date
@@ -286,16 +336,9 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-    private fun getMarginParams(left: Int = 0, top: Int = 0, right: Int = 0, bottom: Int = 0) =
-        ConstraintLayout.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            setMargins(left, top, right, bottom)
-        }
-
     private companion object {
         const val VIEW_TYPE_MESSAGE_SENT = 1
         const val VIEW_TYPE_MESSAGE_RECEIVED = 2
+        const val MAXIMUM_DISTANCE = 1500 * 1000
     }
 }

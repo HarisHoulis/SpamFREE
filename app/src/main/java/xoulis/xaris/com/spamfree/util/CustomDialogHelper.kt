@@ -1,7 +1,7 @@
 package xoulis.xaris.com.spamfree.util
 
 import android.content.Context
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher

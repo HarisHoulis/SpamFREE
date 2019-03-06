@@ -1,6 +1,6 @@
 package xoulis.xaris.com.spamfree.view.settings
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import android.util.Log
 import com.google.firebase.database.*
 

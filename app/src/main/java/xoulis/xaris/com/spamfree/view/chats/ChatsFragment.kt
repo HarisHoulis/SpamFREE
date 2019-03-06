@@ -1,47 +1,37 @@
 package xoulis.xaris.com.spamfree.view.chats
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.RecyclerView
 import android.text.InputFilter
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.ViewPager
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.custom_edit_text_dialog.*
 import kotlinx.android.synthetic.main.fragment_chats.*
 import xoulis.xaris.com.spamfree.*
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatRequest
-import xoulis.xaris.com.spamfree.databinding.ListItemChatBinding
 import xoulis.xaris.com.spamfree.util.*
 import xoulis.xaris.com.spamfree.view.MainActivity
 
-class ChatsFragment : Fragment() {
+class ChatsFragment : Fragment(), ChatsListener {
 
-    private lateinit var chatsAdapter: FirebaseRecyclerAdapter<Chat, ChatsViewHolder>
-
-    private val chatsMap: MutableMap<String, Int> = mutableMapOf()
+    private lateinit var chatAdapter: ChatsAdapter
 
     private lateinit var newRequestDialog: AlertDialog
-
-    private lateinit var onChatsFetchedListener: OnChatsFetchedListener
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        onChatsFetchedListener = context as OnChatsFetchedListener
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,16 +59,6 @@ class ChatsFragment : Fragment() {
                 newRequestDialog.dismiss()
             }
         })
-
-        mainActivity.setNewMessageNotificationListener(object :
-            MainActivity.OnNewMessageNotificationListener {
-            override fun onNewMessageNotificationReceived(chatId: String) {
-                val chatIndex = chatsMap[chatId]!!
-                val chat = chatsAdapter.getItem(chatIndex)
-                showChatRoom(chat)
-            }
-
-        })
     }
 
     private fun fetchChats() {
@@ -90,41 +70,18 @@ class ChatsFragment : Fragment() {
             .setIndexedQuery(chatIndexRef, chatDataRef, Chat::class.java)
             .build()
 
-        chatsAdapter = object : FirebaseRecyclerAdapter<Chat, ChatsViewHolder>(options) {
-            override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ChatsViewHolder {
-                val inflater = LayoutInflater.from(p0.context)
-                val itemBinding = ListItemChatBinding.inflate(inflater, p0, false)
-                return ChatsViewHolder(itemBinding)
-            }
-
-            override fun onBindViewHolder(holder: ChatsViewHolder, position: Int, model: Chat) {
-                holder.bind(model)
-            }
-
-            override fun onChildChanged(
-                type: ChangeEventType,
-                snapshot: DataSnapshot,
-                newIndex: Int,
-                oldIndex: Int
-            ) {
-                super.onChildChanged(type, snapshot, newIndex, oldIndex)
-                val chatId = snapshot.key!!
-                if (type == ChangeEventType.ADDED) {
-                    chatsMap[chatId] = newIndex
-                }
-            }
-
-            override fun onDataChanged() {
-                super.onDataChanged()
-                onChatsFetchedListener.onChatsFetched()
-            }
-        }
+        chatAdapter = ChatsAdapter(options, this)
 
         chats_recyclerView.setHasFixedSize(true)
         chats_recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        chats_recyclerView.itemAnimator = null // Set itemAnimator = null, in order to keep the alpha of items
-        chats_recyclerView.adapter = chatsAdapter
+            androidx.recyclerview.widget.LinearLayoutManager(
+                context,
+                RecyclerView.VERTICAL,
+                false
+            )
+        chats_recyclerView.itemAnimator =
+            null // Set itemAnimator = null, in order to keep the alpha of items
+        chats_recyclerView.adapter = chatAdapter
     }
 
     private fun showNewRequestDialog() {
@@ -181,20 +138,19 @@ class ChatsFragment : Fragment() {
         startActivity(intent)
     }
 
-    interface OnChatsFetchedListener {
-        fun onChatsFetched()
+    override fun onChatsFetched() {
+        val intent = activity!!.intent
+        intent.getStringExtra(CHAT_ID_EXTRA)?.let { chatId ->
+            intent.removeExtra(CHAT_ID_EXTRA)
+            val mainViewPager = activity!!.findViewById<ViewPager>(R.id.viewPager)
+            mainViewPager.currentItem = 1
+            val chatIndex = chatAdapter.chatsMap[chatId]!!
+            val chat = chatAdapter.getItem(chatIndex)
+            showChatRoom(chat)
+        }
     }
 
-    inner class ChatsViewHolder(private val itemBinding: ListItemChatBinding) :
-        RecyclerView.ViewHolder(itemBinding.root) {
-
-        fun bind(chat: Chat) {
-            itemBinding.chat = chat
-            itemBinding.root.setOnClickListener {
-                showChatRoom(chat)
-            }
-            itemBinding.executePendingBindings()
-        }
-
+    override fun onChatRoomClicked(chat: Chat) {
+        showChatRoom(chat)
     }
 }

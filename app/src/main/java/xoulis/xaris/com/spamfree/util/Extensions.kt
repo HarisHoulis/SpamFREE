@@ -1,14 +1,18 @@
 package xoulis.xaris.com.spamfree.util
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import android.net.ConnectivityManager
-import android.support.constraint.Group
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
+import androidx.constraintlayout.widget.Group
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
 import android.view.View
+import com.google.android.gms.location.FusedLocationProviderClient
 import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.data.vo.LocationPoint
 
 /* Views */
 fun View.enableView(enable: Boolean) {
@@ -38,12 +42,12 @@ fun Group.setAllOnClickListeners(listener: View.OnClickListener) {
 
 /* CustomDialogHelper */
 inline fun Context.getDialog(
-        title: String,
-        text: String = "",
-        inputType: Int = InputType.TYPE_CLASS_TEXT,
-        filter: InputFilter = InputFilter.LengthFilter(6),
-        autoDismiss: Boolean = true,
-        f: CustomDialogHelper.() -> Unit
+    title: String,
+    text: String = "",
+    inputType: Int = InputType.TYPE_CLASS_TEXT,
+    filter: InputFilter = InputFilter.LengthFilter(6),
+    autoDismiss: Boolean = true,
+    f: CustomDialogHelper.() -> Unit
 ): AlertDialog =
     CustomDialogHelper(this, title, text, inputType, filter, autoDismiss).apply {
         f()
@@ -66,4 +70,31 @@ fun String.decodeRequestResponseMessage(): Int {
         "3" -> R.string.existing_chat
         else -> R.string.req_sent_successfully
     }
+}
+
+/* Location */
+@SuppressLint("MissingPermission")
+fun FusedLocationProviderClient.getLastLocation(f: (lp: LocationPoint) -> Unit) {
+    lastLocation.addOnSuccessListener {
+        val lp = if (it != null) {
+            LocationPoint(it.latitude, it.longitude)
+        } else {
+            LocationPoint()
+        }
+        f(lp)
+    }
+}
+
+fun LocationPoint.computeDistanceTo(destinationPoint: LocationPoint): Float {
+    val pointA = Location("pointA")
+        .apply {
+            latitude = this@computeDistanceTo.latitude
+            longitude = this@computeDistanceTo.longitude
+        }
+
+    val pointB = Location("pointB").apply {
+        latitude = destinationPoint.latitude
+        longitude = destinationPoint.longitude
+    }
+    return pointA.distanceTo(pointB)
 }

@@ -5,24 +5,26 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.LocalBroadcastManager
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.tabs.TabLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.firebase.ui.auth.AuthUI
 import kotlinx.android.synthetic.main.activity_main.*
 import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.util.*
 import xoulis.xaris.com.spamfree.view.chats.ChatsFragment
+import xoulis.xaris.com.spamfree.view.chats.ChatsListener
 import xoulis.xaris.com.spamfree.view.codes.CodesFragment
 import xoulis.xaris.com.spamfree.view.requests.RequestsFragment
 import xoulis.xaris.com.spamfree.view.settings.ProfileFragment
 
-class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
+class MainActivity : AppCompatActivity() {
 
     private val requestResponseReceiver by lazy {
         object : BroadcastReceiver() {
@@ -39,7 +41,6 @@ class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
     private var mSectionsPagerAdapter: SectionsPagerAdapter? = null
 
     private var requestResponseListener: OnRequestResponseListener? = null
-    private var newMessageNotificationListener: OnNewMessageNotificationListener? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -70,7 +71,6 @@ class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
             )
     }
 
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -83,7 +83,12 @@ class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
             R.id.action_settings -> {
                 val fragment = ProfileFragment.newInstance(uid())
                 supportFragmentManager.beginTransaction()
-                    .setCustomAnimations(R.anim.slide_in_right,0,0, android.R.anim.slide_out_right)
+                    .setCustomAnimations(
+                        R.anim.slide_in_right,
+                        0,
+                        0,
+                        android.R.anim.slide_out_right
+                    )
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
                     .commit()
@@ -106,20 +111,8 @@ class MainActivity : AppCompatActivity(), ChatsFragment.OnChatsFetchedListener {
             }
     }
 
-    override fun onChatsFetched() {
-        intent.getStringExtra(CHAT_ID_EXTRA)?.let { chatId ->
-            intent.removeExtra(CHAT_ID_EXTRA)
-            viewPager.currentItem = 1
-            newMessageNotificationListener?.onNewMessageNotificationReceived(chatId)
-        }
-    }
-
     fun setRequestResponseListener(listener: OnRequestResponseListener) {
         this.requestResponseListener = listener
-    }
-
-    fun setNewMessageNotificationListener(listener: OnNewMessageNotificationListener) {
-        this.newMessageNotificationListener = listener
     }
 
     inner class SectionsPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {

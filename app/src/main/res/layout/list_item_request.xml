@@ -12,7 +12,7 @@
             type="xoulis.xaris.com.spamfree.data.vo.ChatRequest" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary">
@@ -45,7 +45,7 @@
             app:layout_constraintTop_toBottomOf="@+id/person_name_textView"
             tools:text="At: 16/10/2017" />
 
-        <android.support.constraint.Group
+        <androidx.constraintlayout.widget.Group
             android:id="@+id/request_buttons_group"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -76,5 +76,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
