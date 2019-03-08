@@ -68,6 +68,7 @@ class CodesFragment : Fragment(), CodeListener {
         val divider = DividerItemDecoration(context, RecyclerView.VERTICAL).apply {
             setDrawable(activity!!.getDrawable(R.color.dividerColor)!!)
         }
+
         val recyclerView = binding.codesRecyclerView
         with(recyclerView) {
             setHasFixedSize(true)
@@ -82,15 +83,15 @@ class CodesFragment : Fragment(), CodeListener {
     }
 
     private fun requestNewCode() {
-        // TODO fix indexing problem
         showLoading(true)
         val functions = FirebaseFunctions.getInstance("europe-west1")
         functions.getHttpsCallable("requestNewCode")
             .call()
             .addOnCompleteListener { task ->
-                Log.i("sds", "sdsd")
                 if (!task.isSuccessful) {
                     fragment_codes_root.showSnackBar(R.string.failed_to_add_new_code)
+                } else {
+                    codesAdapter.notifyItemInserted(0)
                 }
                 showLoading(false)
             }
