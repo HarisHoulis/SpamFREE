@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
         <import type="android.view.View" />
+
+        <import type="xoulis.xaris.com.spamfree.data.vo.CodeStatus" />
 
         <variable
             name="code"
@@ -11,13 +15,11 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:clickable="true"
-        android:focusable="true"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp">
+        android:layout_height="150dp"
+        android:clickable="true"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/most_recent_code_textVew"
@@ -38,29 +40,45 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="12345" />
 
-        <TextView
-            android:id="@+id/most_recent_code_info_textView"
+        <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:text="@{`Messages ` + code.messages}"
-            android:textAlignment="center"
-            android:visibility="visible"
+            android:orientation="vertical"
+            android:visibility="@{code.status == CodeStatus.USED ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/most_recent_code_edit_messages_imageView"
-            tools:text="5 Messages" />
+            app:layout_constraintEnd_toStartOf="@+id/most_recent_code_edit_info_imageView">
+
+            <TextView
+                android:id="@+id/most_recent_code_info_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{`Messages ` + code.messages}"
+                android:textAlignment="center"
+                tools:text="5 Messages" />
+
+            <TextView
+                android:id="@+id/most_recent_code_expiration_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                app:formatExpirationDate="@{code.getExpirationDate()}"
+                tools:text="25/06/2019" />
+
+        </LinearLayout>
 
         <ImageView
-            android:id="@+id/most_recent_code_edit_messages_imageView"
+            android:id="@+id/most_recent_code_edit_info_imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:visibility="@{code.used &amp;&amp; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="@+id/most_recent_code_info_textView"
+            android:visibility="@{code.status == CodeStatus.USED &amp;&amp; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/most_recent_code_info_textView"
+            app:layout_constraintTop_toTopOf="@+id/linearLayout"
             app:srcCompat="@drawable/ic_ic_edit" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

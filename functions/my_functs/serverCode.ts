@@ -38,7 +38,8 @@ const addCodesToDB = function (numOfCodes: number): Promise<void> {
     return admin.database().ref('/codes').update(codesMap);
 };
 
-const checkIfNewCodesAreNeeded = functions.database.ref('/codes/{codeId}/used')
+const checkIfNewCodesAreNeeded = functions.database
+    .ref('/codes/{codeId}/used')
     .onUpdate((change, _) => {
         const before: boolean = change.before.val();
         const after: boolean = change.after.val();

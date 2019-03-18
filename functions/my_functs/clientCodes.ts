@@ -85,8 +85,35 @@ const assignCodeToExistingUser = functions
         return null;
     });
 
+
+/* Update the months until a chat is expired
+*  TRIGGERED when the 'months' property of a code changes
+*/
+const updateChatMonths = functions
+    .database.ref('/codes/{codeId}/{months}')
+    .onWrite((change, context) => {
+        const after: number = change.after.val();
+
+        if (after === null) {
+            return null;
+        }
+
+        return admin.database().ref(`/chats/${context.params.codeId}`).once('value')
+            .then((snapshot) => {
+                if (snapshot.exists()) {
+                    return snapshot.child('months').ref.set(after);
+                }
+                return null;
+            })
+            .catch((error) => {
+                console.log(error);
+                return null;
+            })
+    });
+
 module.exports = {
     assignCodeToNewUser,
     assignCodeToExistingUser,
-    requestNewCode
+    requestNewCode,
+    updateChatMonths
 }

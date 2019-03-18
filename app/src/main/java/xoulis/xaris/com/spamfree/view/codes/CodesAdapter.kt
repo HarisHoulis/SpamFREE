@@ -9,10 +9,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.RecyclerView
+import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
+import xoulis.xaris.com.spamfree.data.vo.CodeStatus
 import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
 import xoulis.xaris.com.spamfree.view.BaseCodeViewHolder
@@ -77,7 +82,7 @@ class CodesAdapter(
                 listener.onCodeLongClick(it, code.id)
                 false
             }
-            itemBinding.mostRecentCodeEditMessagesImageView.setOnClickListener {
+            itemBinding.mostRecentCodeEditInfoImageView.setOnClickListener {
                 (itemBinding.root.context as AppCompatActivity).startSupportActionMode(modeCallback)
             }
             itemBinding.executePendingBindings()
@@ -91,12 +96,12 @@ class CodesAdapter(
             this.currentCode = code
             itemBinding.index = itemCount - position
             itemBinding.code = code
-            if (!code.used) {
+            if (code.status != CodeStatus.USED) {
                 itemBinding.root.setOnLongClickListener {
                     listener.onCodeLongClick(it, code.id)
                     false
                 }
-                itemBinding.secondaryCodeEditMessagesImageView.setOnClickListener {
+                itemBinding.secondaryCodeEditInfoImageView.setOnClickListener {
                     (itemBinding.root.context as AppCompatActivity).startSupportActionMode(
                         modeCallback
                     )

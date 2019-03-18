@@ -1,9 +1,9 @@
 package xoulis.xaris.com.spamfree.view.codes
 
-
 import android.content.Intent
 import androidx.databinding.DataBindingUtil
 import android.os.Bundle
+import android.text.InputFilter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.ObservableSnapshotArray
+import com.firebase.ui.database.SnapshotParser
+import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.fragment_codes.*
@@ -25,9 +28,7 @@ import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
 import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
-import xoulis.xaris.com.spamfree.util.getDialog
-import xoulis.xaris.com.spamfree.util.showSnackBar
-import xoulis.xaris.com.spamfree.util.userCodesDbRef
+import xoulis.xaris.com.spamfree.util.*
 
 class CodesFragment : Fragment(), CodeListener {
 
@@ -56,11 +57,16 @@ class CodesFragment : Fragment(), CodeListener {
     }
 
     private fun fetchUserCodes() {
-        val query = userCodesDbRef().orderByChild("timestamp")
+        val codeIndexRef = userCodesDbRef()
+        val codeDataRef = codesDbRef.orderByChild("timestamp").ref
+
+        val chatIndexRef = FirebaseDatabase.getInstance().getReference("/user_codes/${uid()}")
+        val chatDataRef = FirebaseDatabase.getInstance().getReference("/codes")
+
         val options =
             FirebaseRecyclerOptions.Builder<ClientCode>()
                 .setLifecycleOwner(this)
-                .setQuery(query, ClientCode::class.java)
+                .setIndexedQuery(chatIndexRef, chatDataRef, ClientCode::class.java)
                 .build()
 
         codesAdapter = CodesAdapter(options, this)
@@ -103,6 +109,10 @@ class CodesFragment : Fragment(), CodeListener {
             .setValue(messages)
     }
 
+    private fun updateCodeExpiration(codeId: String, months: String) {
+        codesDbRef.child("$codeId/months").setValue(months)
+    }
+
     private fun showLoading(show: Boolean) {
         binding.showLoading = show
         binding.addNewCodeFab.isEnabled = !show
@@ -122,8 +132,15 @@ class CodesFragment : Fragment(), CodeListener {
     override fun onCodeChangeMessageLimitClick(code: ClientCode) {
         val title = "Number of messages"
         val text = code.messages
-        val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
-            setEditTextWatcher()
+        val dialog = context!!.getDialog(
+            title = title,
+            text = text,
+            inputType = InputType.TYPE_CLASS_NUMBER,
+            filter = InputFilter.LengthFilter(2)
+        ) {
+            setEditTextWatcher {
+                enableOkButton(!(it == text || it.isBlank()))
+            }
             setOkButtonClickListener { userInput ->
                 updateCodeMessages(code.id, userInput)
             }
@@ -132,6 +149,30 @@ class CodesFragment : Fragment(), CodeListener {
     }
 
     override fun onCodeChangeDateClick(code: ClientCode) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val currentMonths = code.months
+        val title = "Number of months"
+        val text = code.months.toString()
+        val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
+            setEditTextWatcher {
+                val monthsInput = if (it.isBlank()) 0 else it.toInt()
+                var enableOkButton = false
+                val errorMessage = if (monthsInput == currentMonths || monthsInput == 0) {
+                    getString(R.string.generic_empty_text_error)
+                } else if (monthsInput > 12) {
+                    getString(R.string.months_greater_error)
+                } else if (monthsInput < currentMonths) {
+                    getString(R.string.months_fewer_error)
+                } else {
+                    enableOkButton = true
+                    null
+                }
+                enableOkButton(enableOkButton)
+                setTextInputLayoutError(errorMessage)
+            }
+            setOkButtonClickListener { userInput ->
+                // TODO updateCodeExpiration(code.id, userInput)
+            }
+        }
+        dialog.show()
     }
 }

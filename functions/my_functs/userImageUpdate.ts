@@ -13,7 +13,6 @@ exports.updateUserImageInChats = functions.region('europe-west1')
         }
 
         const imageUrl: string = data['imageUrl'];
-        console.log(imageUrl);
         const uid = context.auth.uid;
 
         // Get user codes

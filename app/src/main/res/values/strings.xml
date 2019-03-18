@@ -19,6 +19,9 @@
     <string name="used_code">This code has already been used.</string>
     <string name="failed_to_add_new_code">Couldn\'t add new code. Check your connection and try again.</string>
     <string name="need_location_permission">We need access to your location for ensuring safety.</string>
+    <string name="months_greater_error">You typed a value bigger than allowed.</string>
+    <string name="months_fewer_error">New value is less than the current.</string>
+    <string name="generic_empty_text_error">Please try a different input.</string>
 
     <!-- Misc -->
     <string name="title_activity_main">MainActivity</string>
@@ -27,8 +30,11 @@
     <string name="tab_codes">Codes</string>
     <string name="accept_caps">ACCEPT</string>
     <string name="decline_caps">DECLINE</string>
+    <string name="unused">unused</string>
+    <string name="active">active</string>
     <string name="used">used</string>
     <string name="at">At:</string>
+    <string name="expired">expired</string>
 
     <!-- Menu -->
     <string name="action_settings">Account Settings</string>
@@ -55,8 +61,5 @@
     <string name="existing_req">You have already sent a request to that person!</string>
     <string name="existing_chat">You are already chatting with that persons</string>
     <string name="req_sent_successfully">Your request was sent successfully</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

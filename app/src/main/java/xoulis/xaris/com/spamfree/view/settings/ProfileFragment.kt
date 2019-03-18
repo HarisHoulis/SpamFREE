@@ -131,7 +131,7 @@ class ProfileFragment() : Fragment() {
         val text = user.status
         val dialog =
             context!!.getDialog(title = title, text = text, filter = InputFilter.LengthFilter(30)) {
-                setEditTextWatcher()
+                setEditTextWatcher { enableOkButton(!(it == text || it.isBlank())) }
                 setOkButtonClickListener { newStatus ->
                     updateUserStatus(newStatus, user)
                 }

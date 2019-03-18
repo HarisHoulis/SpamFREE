@@ -11,13 +11,15 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import xoulis.xaris.com.spamfree.R
 
 class CustomDialogHelper(
     context: Context,
     val title: String,
     val message: String,
-    val inputType: Int,
+    private val inputType: Int,
     private val filter: InputFilter?,
     private val autoDismiss: Boolean
 ) {
@@ -28,11 +30,14 @@ class CustomDialogHelper(
     private val builder: AlertDialog.Builder = AlertDialog.Builder(context).setView(dialogView)
     private lateinit var dialog: AlertDialog
 
-    private val titleTextView: TextView by lazy {
+    private val titleTextView by lazy {
         dialogView.findViewById<TextView>(R.id.custom_dialog_title)
     }
-    private val editText: EditText by lazy {
-        dialogView.findViewById<EditText>(R.id.custom_dialog_message)
+    private val inputLayout by lazy {
+        dialogView.findViewById<TextInputLayout>(R.id.custom_dialog_textInputLayout)
+    }
+    private val editText by lazy {
+        dialogView.findViewById<TextInputEditText>(R.id.custom_dialog_message)
     }
     private val okButton: Button by lazy {
         dialogView.findViewById<Button>(R.id.custom_dialog_ok_button)
@@ -41,11 +46,11 @@ class CustomDialogHelper(
     fun create(): AlertDialog {
         titleTextView.text = title
         editText.apply {
-            inputType = inputType
+            inputType = this@CustomDialogHelper.inputType
             if (filter != null) {
                 filters = arrayOf(filter)
             }
-            setText(message)
+            append(message)
         }
         dialog = builder.create()
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
@@ -61,17 +66,24 @@ class CustomDialogHelper(
         }
     }
 
-    fun setEditTextWatcher() {
+    fun enableOkButton(enableView: Boolean) {
+        okButton.enableView(enableView)
+    }
+
+    fun setTextInputLayoutError(errorString: String?) {
+        inputLayout.error = errorString
+    }
+
+    fun setEditTextWatcher(f: (userInput: String) -> Unit) {
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                with(p0.toString()) {
-                    okButton.enableView(!(this == message || this.isBlank()))
-                }
+                f(p0.toString())
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
         })
     }
 }

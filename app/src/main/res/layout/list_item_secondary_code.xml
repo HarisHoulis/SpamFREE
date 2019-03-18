@@ -8,6 +8,8 @@
 
         <import type="android.view.View" />
 
+        <import type="xoulis.xaris.com.spamfree.data.vo.CodeStatus" />
+
         <variable
             name="code"
             type="xoulis.xaris.com.spamfree.data.vo.ClientCode" />
@@ -20,10 +22,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
+        android:alpha="@{code.status == CodeStatus.UNUSED ? 1.0f : 0.6f}"
         android:clickable="true"
-        android:alpha="@{code.used ? 0.6f : 1.0f}"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/secondary_code_index_textView"
@@ -35,7 +37,7 @@
             android:text="@{`#` + index}"
             android:textAlignment="center"
             android:textColor="@color/defaultTextColor"
-            app:layout_constraintBottom_toBottomOf="@+id/secondary_code_messages_textView"
+            app:layout_constraintBottom_toBottomOf="@+id/secondary_code_info_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/secondary_code_textView"
             tools:text="#1" />
@@ -53,40 +55,65 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="12345" />
 
-        <TextView
-            android:id="@+id/secondary_code_messages_textView"
+        <LinearLayout
+            android:id="@+id/secondary_code_info_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginBottom="16dp"
-            android:visibility="@{code.used ? View.GONE : View.VISIBLE}"
-            android:text="@{code.messages + ` messages left`}"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/secondary_code_index_textView"
-            app:layout_constraintTop_toBottomOf="@+id/secondary_code_textView"
-            tools:text="3 messages left" />
+            app:layout_constraintTop_toBottomOf="@+id/secondary_code_textView">
+
+            <TextView
+                android:id="@+id/secondary_code_messages_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{code.status == CodeStatus.USED ? View.GONE : View.VISIBLE}"
+                android:text="@{code.messages + ` messages left`}"
+                tools:text="3 messages left" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="@color/dividerColor" />
+
+            <TextView
+                android:id="@+id/secondary_code_expiration_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                app:formatExpirationDate="@{code.getExpirationDate()}"
+                tools:text="25/06/2019" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/secondary_code_usability_textView"
+            android:id="@+id/secondary_code_status_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            app:codeStatus="@{code.status}"
             android:textSize="12sp"
-            android:text="@string/used"
-            android:visibility="@{code.used ? View.VISIBLE : View.GONE}"
             app:layout_constraintBaseline_toBaselineOf="@+id/secondary_code_textView"
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="used" />
 
         <ImageView
-            android:id="@+id/secondary_code_edit_messages_imageView"
+            android:id="@+id/secondary_code_edit_info_imageView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginEnd="16dp"
-            android:visibility="@{code.used &amp;&amp; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:scaleType="centerCrop"
+            android:visibility="@{code.status == CodeStatus.USED &amp;&amp; code.hasActiveRequest ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@+id/secondary_code_info_layout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/secondary_code_info_layout"
             app:srcCompat="@drawable/ic_ic_edit" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
