@@ -3,8 +3,6 @@ package xoulis.xaris.com.spamfree.view
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.view.ActionMode
-import androidx.databinding.DataBindingComponent
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
 import xoulis.xaris.com.spamfree.R

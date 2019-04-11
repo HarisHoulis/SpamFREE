@@ -1,6 +1,5 @@
 package xoulis.xaris.com.spamfree.data.vo
 
-import android.location.Location
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 

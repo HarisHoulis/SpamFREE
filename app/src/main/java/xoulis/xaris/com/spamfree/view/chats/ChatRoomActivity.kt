@@ -2,14 +2,14 @@ package xoulis.xaris.com.spamfree.view.chats
 
 import android.Manifest
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -20,7 +20,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import kotlinx.android.synthetic.main.activity_chat_room.*
-import xoulis.xaris.com.spamfree.*
+import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.binding.setChatImage
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.data.vo.ChatMessage
@@ -44,12 +44,11 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
     private var receiverId: String = ""
+    private var hasFinished: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
-
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         val args = intent.extras
         args?.getParcelable<Chat>(CHAT_EXTRA)?.let {
@@ -61,8 +60,10 @@ class ChatRoomActivity : AppCompatActivity() {
             val senderImage = if (isOwner) it.ownerImage else it.memberImage
             val senderName = if (isOwner) it.ownerName else it.memberName
             receiverId = if (isOwner) it.memberId else it.ownerId
+            hasFinished = it.finished
 
-            if (!isOwner) {
+            if (!isOwner && !hasFinished) {
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
                 getLocationDistance(originalLocation)
             }
             initToolbar(receiverName, it)
@@ -104,7 +105,7 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun setupMessagesRecyclerView(chatId: String) {
         val recyclerView = messages_recyclerView
         val linearLayoutManager =
-            androidx.recyclerview.widget.LinearLayoutManager(
+            LinearLayoutManager(
                 this@ChatRoomActivity,
                 RecyclerView.VERTICAL,
                 false
@@ -244,11 +245,20 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         })
 
-        val currentText = chat_room_editText.text
-        chat_room_send_button.enableView(currentText.toString().trim().isNotEmpty())
-        chat_room_send_button.setOnClickListener {
-            sendMessage(chatId, senderName, senderImage)
+        if (hasFinished) {
+            disableBottomToolbar()
+        } else {
+            val currentText = chat_room_editText.text
+            chat_room_send_button.enableView(currentText.toString().trim().isNotEmpty())
+            chat_room_send_button.setOnClickListener {
+                sendMessage(chatId, senderName, senderImage)
+            }
         }
+    }
+
+    private fun disableBottomToolbar() {
+        chat_room_send_button.enableView(false)
+        chat_room_editText.enableView(false)
     }
 
     private fun getLocationDistance(originalLocation: LocationPoint) {

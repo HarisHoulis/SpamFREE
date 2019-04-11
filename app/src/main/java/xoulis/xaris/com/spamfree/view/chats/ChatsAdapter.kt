@@ -1,6 +1,5 @@
 package xoulis.xaris.com.spamfree.view.chats
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +7,6 @@ import com.firebase.ui.common.ChangeEventType
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import xoulis.xaris.com.spamfree.data.vo.Chat
 import xoulis.xaris.com.spamfree.databinding.ListItemChatBinding
 

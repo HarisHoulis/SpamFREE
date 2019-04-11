@@ -4,15 +4,19 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.net.ConnectivityManager
-import androidx.constraintlayout.widget.Group
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AlertDialog
 import android.text.InputFilter
 import android.text.InputType
+import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AlertDialog
+import androidx.constraintlayout.widget.Group
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.material.snackbar.Snackbar
 import xoulis.xaris.com.spamfree.R
+import xoulis.xaris.com.spamfree.data.vo.ClientCode
+import xoulis.xaris.com.spamfree.data.vo.CodeStatus
 import xoulis.xaris.com.spamfree.data.vo.LocationPoint
+import java.util.*
 
 /* Views */
 fun View.enableView(enable: Boolean) {
@@ -97,4 +101,17 @@ fun LocationPoint.computeDistanceTo(destinationPoint: LocationPoint): Float {
         longitude = destinationPoint.longitude
     }
     return pointA.distanceTo(pointB)
+}
+
+/* Code */
+fun ClientCode.hasExpired() {
+    if (status == CodeStatus.EXPIRED) {
+        return
+    }
+    val calendar = Calendar.getInstance()
+    val currentDate = calendar.time
+    val expirationDate = getExpirationDate()
+    if (currentDate.after(expirationDate)) {
+        codesDbRef.child("$id/status").setValue(CodeStatus.EXPIRED)
+    }
 }

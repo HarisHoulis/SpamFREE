@@ -1,13 +1,17 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+enum CodeStatus {
+    UNUSED, ACTIVE, USED, EXPIRED
+}
+
 class Code {
     public id: string;
-    public used: boolean = false;
     public messages: string = '5';
     public assignedUid: string = "";
     public hasActiveRequest: boolean = false;
     public timestamp: number;
+    public status: CodeStatus = CodeStatus.UNUSED;
 
     constructor(id: string, timestamp: number) {
         this.id = id;
@@ -39,16 +43,16 @@ const addCodesToDB = function (numOfCodes: number): Promise<void> {
 };
 
 const checkIfNewCodesAreNeeded = functions.database
-    .ref('/codes/{codeId}/used')
+    .ref('/codes/{codeId}/status')
     .onUpdate((change, _) => {
-        const before: boolean = change.before.val();
-        const after: boolean = change.after.val();
+        const before = change.before.val();
+        const after = change.after.val();
 
-        if (before === after || after === false) {
+        if (before === after || (after !== CodeStatus[CodeStatus.ACTIVE] && after !== CodeStatus[CodeStatus.EXPIRED])) {
             return null;
         }
 
-        return admin.database().ref('/codes').orderByChild('used').equalTo(false).once('value')
+        return admin.database().ref('/codes').orderByChild('status').equalTo(CodeStatus[CodeStatus.UNUSED]).once('value')
             .then(snapshot => {
                 console.log(snapshot.numChildren());
                 if (!snapshot.exists() || snapshot.numChildren() < MINIMUM_NUMBER_OF_UNUSED_CODES) {

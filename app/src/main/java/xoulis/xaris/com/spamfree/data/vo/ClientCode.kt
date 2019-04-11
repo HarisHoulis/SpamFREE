@@ -2,8 +2,6 @@ package xoulis.xaris.com.spamfree.data.vo
 
 import com.google.firebase.database.Exclude
 import com.google.firebase.database.ServerValue
-import xoulis.xaris.com.spamfree.util.CODE_EXPIRATION_TIMESTAMP_FORMAT
-import java.text.SimpleDateFormat
 import java.util.*
 
 data class ClientCode(

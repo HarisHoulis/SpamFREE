@@ -2,27 +2,26 @@ package xoulis.xaris.com.spamfree.view.settings
 
 
 import android.app.Activity
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.text.InputFilter
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.functions.FirebaseFunctions
 import com.google.firebase.storage.FirebaseStorage
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-
-
+import kotlinx.android.synthetic.main.fragment_profile.*
+import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.User
 import xoulis.xaris.com.spamfree.databinding.FragmentProfileBinding
 import xoulis.xaris.com.spamfree.util.*
-import android.view.*
-import kotlinx.android.synthetic.main.fragment_profile.*
-import xoulis.xaris.com.spamfree.R
 
 
 private const val ARG_UID = "argument_uid"

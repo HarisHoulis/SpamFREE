@@ -1,13 +1,17 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
+enum CodeStatus {
+    UNUSED, ACTIVE, USED, EXPIRED
+}
+
 class Code {
     public id: string;
-    public used: boolean = false;
     public messages: string = '5';
     public assignedUid: string = "";
     public hasActiveRequest: boolean = false;
     public timestamp: number;
+    public status: CodeStatus = CodeStatus.UNUSED;
 
     constructor(id: string, timestamp: number) {
         this.id = id;
@@ -20,20 +24,15 @@ const assignCodeToUser = async function (uid: string) {
     try {
         const getUnassignedCodeQuery = admin.database().ref('/codes').orderByChild("assignedUid").equalTo("").limitToFirst(1);
         const codeSnapshot = await getUnassignedCodeQuery.once('value');
-
-        // Get the code
-        let code: Code;
-        codeSnapshot.forEach((child) => {
-            code = child.val();
-            return true;
-        })
-
-        // Update code's timestamp
-        code.timestamp = admin.database.ServerValue.TIMESTAMP;
-
-        const assignToUserPromise = codeSnapshot.child(`${code.id}/assignedUid`).ref.set(uid);
-        const addToClientCodesPromise = admin.database().ref(`/client_codes/${uid}/${code.id}`).set(code);
-        return Promise.all([assignToUserPromise, addToClientCodesPromise]);
+        // Assign code to user
+        const codeKey = Object.keys(codeSnapshot.val())[0];
+        const assignPromise = codeSnapshot.ref.child(codeKey).update({
+            assignedUid: uid,
+            timestamp: admin.database.ServerValue.TIMESTAMP
+        });
+        // Add code index to '/user_codes'
+        const indexPromise = admin.database().ref(`/user_codes/${uid}/${codeKey}`).set(true);
+        return Promise.all([assignPromise, indexPromise]);
     }
     catch (err) {
         console.log(err);
@@ -66,54 +65,36 @@ const assignCodeToNewUser = functions
     });
 
 /* Assign new code to existing user
-*  TRIGGERED when a user's code is marked 'used = true'
+*  TRIGGERED when a property 'status' of a code, changes
 */
 const assignCodeToExistingUser = functions
-    .database.ref('/client_codes/{uid}/{codeId}')
+    .database.ref('/codes/{codeId}')
     .onUpdate(async (change, context) => {
         const before = change.before.val();
         const after = change.after.val();
+        const statusBefore = change.before.child('status').val();
+        const statusAfter = change.after.child('status').val();
 
-        if (!change.before.exists || before === after || before.used === after.used) {
+        const codeId = context.params.codeId;
+        const uid = change.after.child('assignedUid').val();
+
+        if (before === after || statusBefore === statusAfter || 
+            (statusAfter !== CodeStatus[CodeStatus.ACTIVE] && statusAfter !== CodeStatus[CodeStatus.EXPIRED])) {
             return null;
         }
 
-        if (after.used === true) {
-            const uid = context.params.uid;
-            return assignCodeToUser(uid);
+        let finishdChatPromise: Promise<void>
+        if (statusAfter === CodeStatus[CodeStatus.EXPIRED]) {
+            const codeSnapshot = await admin.database().ref(`/chats/${codeId}`).once('value');
+            if (codeSnapshot.exists()) {
+                finishdChatPromise = codeSnapshot.child('finished').ref.set(true);
+            }
         }
-        return null;
-    });
-
-
-/* Update the months until a chat is expired
-*  TRIGGERED when the 'months' property of a code changes
-*/
-const updateChatMonths = functions
-    .database.ref('/codes/{codeId}/{months}')
-    .onWrite((change, context) => {
-        const after: number = change.after.val();
-
-        if (after === null) {
-            return null;
-        }
-
-        return admin.database().ref(`/chats/${context.params.codeId}`).once('value')
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    return snapshot.child('months').ref.set(after);
-                }
-                return null;
-            })
-            .catch((error) => {
-                console.log(error);
-                return null;
-            })
+        return Promise.all([finishdChatPromise, assignCodeToUser(uid)]);
     });
 
 module.exports = {
     assignCodeToNewUser,
     assignCodeToExistingUser,
-    requestNewCode,
-    updateChatMonths
+    requestNewCode
 }

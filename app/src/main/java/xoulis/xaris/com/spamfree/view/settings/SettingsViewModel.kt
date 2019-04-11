@@ -1,7 +1,6 @@
 package xoulis.xaris.com.spamfree.view.settings
 
 import androidx.lifecycle.ViewModel
-import xoulis.xaris.com.spamfree.util.userDbRef
 import xoulis.xaris.com.spamfree.util.usersDbRef
 
 class SettingsViewModel : ViewModel() {

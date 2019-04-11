@@ -1,7 +1,6 @@
 package xoulis.xaris.com.spamfree.util
 
 import android.content.Context
-import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -9,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import xoulis.xaris.com.spamfree.R

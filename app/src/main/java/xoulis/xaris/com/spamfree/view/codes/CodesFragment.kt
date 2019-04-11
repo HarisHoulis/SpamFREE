@@ -1,33 +1,26 @@
 package xoulis.xaris.com.spamfree.view.codes
 
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import android.text.InputFilter
+import android.text.InputType
+import android.view.HapticFeedbackConstants
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.view.ActionMode
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import android.text.InputType
-import android.util.Log
-import android.view.*
-import android.widget.PopupMenu
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
-import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
-import com.firebase.ui.database.ObservableSnapshotArray
-import com.firebase.ui.database.SnapshotParser
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.functions.FirebaseFunctions
 import kotlinx.android.synthetic.main.fragment_codes.*
 import xoulis.xaris.com.spamfree.R
 import xoulis.xaris.com.spamfree.data.vo.ClientCode
 import xoulis.xaris.com.spamfree.databinding.FragmentCodesBinding
-import xoulis.xaris.com.spamfree.databinding.ListItemMostRecentCodeBinding
-import xoulis.xaris.com.spamfree.databinding.ListItemSecondaryCodeBinding
 import xoulis.xaris.com.spamfree.util.*
 
 class CodesFragment : Fragment(), CodeListener {
@@ -60,13 +53,17 @@ class CodesFragment : Fragment(), CodeListener {
         val codeIndexRef = userCodesDbRef()
         val codeDataRef = codesDbRef.orderByChild("timestamp").ref
 
-        val chatIndexRef = FirebaseDatabase.getInstance().getReference("/user_codes/${uid()}")
-        val chatDataRef = FirebaseDatabase.getInstance().getReference("/codes")
+//        val chatIndexRef = FirebaseDatabase.getInstance().getReference("/user_codes/${uid()}")
+//        val chatDataRef = FirebaseDatabase.getInstance().getReference("/codes")
 
         val options =
             FirebaseRecyclerOptions.Builder<ClientCode>()
                 .setLifecycleOwner(this)
-                .setIndexedQuery(chatIndexRef, chatDataRef, ClientCode::class.java)
+                .setIndexedQuery(codeIndexRef, codeDataRef) {snapshot ->
+                    val code = snapshot.getValue(ClientCode::class.java)!!
+                    code.hasExpired()
+                    code
+                }
                 .build()
 
         codesAdapter = CodesAdapter(options, this)
@@ -170,7 +167,7 @@ class CodesFragment : Fragment(), CodeListener {
                 setTextInputLayoutError(errorMessage)
             }
             setOkButtonClickListener { userInput ->
-                // TODO updateCodeExpiration(code.id, userInput)
+                updateCodeExpiration(code.id, userInput)
             }
         }
         dialog.show()

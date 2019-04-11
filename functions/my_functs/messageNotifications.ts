@@ -15,7 +15,7 @@ class ChatMessage {
 */
 const sendNewMessageNotification = functions
     .database.ref('/messages/{chatId}/{messageId}')
-    .onCreate(async (snapshot, context) => {
+    .onCreate(async (snapshot, _) => {
         const newMessage: ChatMessage = snapshot.val();
         const senderName = newMessage.senderName;
         const senderImage = newMessage.senderImage;
