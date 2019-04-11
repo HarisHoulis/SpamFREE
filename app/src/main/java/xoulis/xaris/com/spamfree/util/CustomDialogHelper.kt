@@ -47,7 +47,7 @@ class CustomDialogHelper(
         editText.apply {
             inputType = this@CustomDialogHelper.inputType
             if (filter != null) {
-                filters = arrayOf(filter)
+                filters = arrayOf(this@CustomDialogHelper.filter)
             }
             append(message)
         }

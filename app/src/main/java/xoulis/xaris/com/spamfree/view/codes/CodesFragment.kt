@@ -106,7 +106,7 @@ class CodesFragment : Fragment(), CodeListener {
             .setValue(messages)
     }
 
-    private fun updateCodeExpiration(codeId: String, months: String) {
+    private fun updateCodeExpiration(codeId: String, months: Int) {
         codesDbRef.child("$codeId/months").setValue(months)
     }
 
@@ -149,7 +149,11 @@ class CodesFragment : Fragment(), CodeListener {
         val currentMonths = code.months
         val title = "Number of months"
         val text = code.months.toString()
-        val dialog = context!!.getDialog(title, text, InputType.TYPE_CLASS_NUMBER) {
+        val dialog = context!!.getDialog(title = title,
+            text = text,
+            inputType = InputType.TYPE_CLASS_NUMBER,
+            filter = InputFilter.LengthFilter(2)
+        ) {
             setEditTextWatcher {
                 val monthsInput = if (it.isBlank()) 0 else it.toInt()
                 var enableOkButton = false
@@ -167,7 +171,7 @@ class CodesFragment : Fragment(), CodeListener {
                 setTextInputLayoutError(errorMessage)
             }
             setOkButtonClickListener { userInput ->
-                updateCodeExpiration(code.id, userInput)
+                updateCodeExpiration(code.id, userInput.toInt())
             }
         }
         dialog.show()
