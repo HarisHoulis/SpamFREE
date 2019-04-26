@@ -79,7 +79,7 @@ const assignCodeToExistingUser = functions
         const uid = change.after.child('assignedUid').val();
 
         if (before === after || statusBefore === statusAfter || 
-            (statusAfter !== CodeStatus[CodeStatus.ACTIVE] && statusAfter !== CodeStatus[CodeStatus.EXPIRED])) {
+            (statusAfter !== CodeStatus[CodeStatus.USED] && statusAfter !== CodeStatus[CodeStatus.EXPIRED])) {
             return null;
         }
 

@@ -48,7 +48,7 @@ const checkIfNewCodesAreNeeded = functions.database
         const before = change.before.val();
         const after = change.after.val();
 
-        if (before === after || (after !== CodeStatus[CodeStatus.ACTIVE] && after !== CodeStatus[CodeStatus.EXPIRED])) {
+        if (before === after || (after !== CodeStatus[CodeStatus.USED] && after !== CodeStatus[CodeStatus.EXPIRED])) {
             return null;
         }
 
