@@ -40,3 +40,5 @@ Libraries used
 
 ---
 #### Developed as part of my thesis, University of Piraeus, Computer Science Department
+
+#Test auto-merge feature
